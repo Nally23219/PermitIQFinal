@@ -497,27 +497,29 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
       <div class="callout co-blue"><div class="co-icon">ℹ️</div><div>Upload your ISD denial letter and/or construction plans, or paste the denial text below. The AI will classify your violation, determine if it can be cured without ZBA, and generate a step-by-step action plan.</div></div>
 
       <!-- Upload zones -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <label style="font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;">Denial Letter <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
-          <div class="upload-zone" id="zone-da-denial" style="padding:1rem;height:90px;flex-shrink:0;" ondragover="dragOver(event,'zone-da-denial')" ondragleave="dragLeave('zone-da-denial')" ondrop="dropDAFile(event,'da-denial')" onclick="document.getElementById('file-da-denial').click()">
-            <input type="file" id="file-da-denial" accept=".pdf,.png,.jpg,.jpeg" style="display:none;" onchange="handleDAFile(this,'da-denial')">
-            <div style="font-size:20px;margin-bottom:3px;">📄</div>
-            <div class="upload-title" style="font-size:12px;">Drop denial letter here</div>
-            <div class="upload-sub" style="font-size:11px;">PDF, PNG, or JPG</div>
+      <div style="margin-bottom:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:5px;">Denial Letter <span style="font-size:10px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
+            <div class="upload-zone" id="zone-da-denial" style="padding:0.75rem;height:80px;box-sizing:border-box;" ondragover="dragOver(event,'zone-da-denial')" ondragleave="dragLeave('zone-da-denial')" ondrop="dropDAFile(event,'da-denial')" onclick="document.getElementById('file-da-denial').click()">
+              <input type="file" id="file-da-denial" accept=".pdf,.png,.jpg,.jpeg" style="display:none;" onchange="handleDAFile(this,'da-denial')">
+              <div style="font-size:18px;margin-bottom:2px;">📄</div>
+              <div style="font-size:11px;font-weight:600;color:var(--t2);">Drop denial letter</div>
+              <div style="font-size:10px;color:var(--t3);">PDF, PNG, JPG</div>
+            </div>
           </div>
-          <div id="list-da-denial" class="file-list" style="max-height:60px;overflow-y:auto;"></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <label style="font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;">Construction Plans <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
-          <div class="upload-zone" id="zone-da-plans" style="padding:1rem;height:90px;flex-shrink:0;" ondragover="dragOver(event,'zone-da-plans')" ondragleave="dragLeave('zone-da-plans')" ondrop="dropDAFile(event,'da-plans')" onclick="document.getElementById('file-da-plans').click()">
-            <input type="file" id="file-da-plans" accept=".pdf,.png,.jpg,.jpeg" multiple style="display:none;" onchange="handleDAFile(this,'da-plans')">
-            <div style="font-size:20px;margin-bottom:3px;">📐</div>
-            <div class="upload-title" style="font-size:12px;">Drop plans here</div>
-            <div class="upload-sub" style="font-size:11px;">PDF, PNG, JPG · Multiple OK</div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:5px;">Construction Plans <span style="font-size:10px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
+            <div class="upload-zone" id="zone-da-plans" style="padding:0.75rem;height:80px;box-sizing:border-box;" ondragover="dragOver(event,'zone-da-plans')" ondragleave="dragLeave('zone-da-plans')" ondrop="dropDAFile(event,'da-plans')" onclick="document.getElementById('file-da-plans').click()">
+              <input type="file" id="file-da-plans" accept=".pdf,.png,.jpg,.jpeg" multiple style="display:none;" onchange="handleDAFile(this,'da-plans')">
+              <div style="font-size:18px;margin-bottom:2px;">📐</div>
+              <div style="font-size:11px;font-weight:600;color:var(--t2);">Drop plans here</div>
+              <div style="font-size:10px;color:var(--t3);">PDF, PNG, JPG · Multiple OK</div>
+            </div>
           </div>
-          <div id="list-da-plans" class="file-list" style="max-height:60px;overflow-y:auto;"></div>
         </div>
+        <div id="list-da-denial" class="file-list"></div>
+        <div id="list-da-plans" class="file-list"></div>
       </div>
 
       <div class="fg">
