@@ -202,7 +202,7 @@ Return maximum 8 redlines total. Return only the JSON array.`,
       // Add a small red stamp in the corner
       const stampX = width - 200, stampY = height - 50;
       planPage.drawRectangle({ x: stampX, y: stampY, width: 190, height: 40, color: rgb(1, 0.9, 0.9), borderColor: rgb(0.8,0,0), borderWidth: 1.5 });
-      planPage.drawText('⚠ REDLINES ATTACHED', { x: stampX + 8, y: stampY + 24, size: 9, font: boldFont, color: rgb(0.7, 0, 0) });
+      planPage.drawText('! REDLINES ATTACHED', { x: stampX + 8, y: stampY + 24, size: 9, font: boldFont, color: rgb(0.7, 0, 0) });
       planPage.drawText('See annotation summary page', { x: stampX + 8, y: stampY + 10, size: 8, font: regularFont, color: rgb(0.5, 0, 0) });
     }
 
