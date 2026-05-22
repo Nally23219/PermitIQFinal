@@ -14,6 +14,7 @@ import reportsRoute from "./routes/reports.js";
 import feedbackRoute from "./routes/feedback.js";
 import dashboardRoute from "./routes/dashboard.js";
 import zoningRoute from "./routes/zoning.js";
+import caseLookupRoute from "./routes/caselookup.js";
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use("/api/reports", reportsRoute);
 app.use("/api/feedback", feedbackRoute);
 app.use("/api/dashboard", dashboardRoute);
 app.use("/api/zoning", zoningRoute);
+app.use("/api/case", caseLookupRoute);
 
 app.use(express.static(path.join(__dirname, "client/public")));
 app.get("*", (req, res) => {
