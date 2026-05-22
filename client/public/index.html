@@ -152,7 +152,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 /* ── UPLOAD ZONE ── */
 .upload-zone{border:2px dashed var(--bd2);border-radius:var(--rl);padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bc);position:relative;}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--bb);background:var(--inb);}
-.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;pointer-events:none;}
 .upload-icon{font-size:36px;margin-bottom:0.75rem;}
 .upload-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px;}
 .upload-sub{font-size:13px;color:var(--t2);}
@@ -384,7 +384,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <label style="font-size:12px;font-weight:600;color:var(--t2);letter-spacing:0.3px;text-transform:uppercase;display:block;margin-bottom:6px;">
           Upload Plans / Drawings <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional — helps AI give more specific advice</span>
         </label>
-        <div class="upload-zone" id="zone-np-plans" style="padding:1.25rem;" ondragover="dragOver(event,'zone-np-plans')" ondragleave="dragLeave('zone-np-plans')" ondrop="dropNPFile(event)">
+        <div class="upload-zone" id="zone-np-plans" style="padding:1.25rem;" ondragover="dragOver(event,'zone-np-plans')" ondragleave="dragLeave('zone-np-plans')" ondrop="dropNPFile(event)" onclick="document.getElementById('file-np-plans').click()">
           <input type="file" id="file-np-plans" accept=".pdf,.png,.jpg,.jpeg" multiple onchange="handleNPFile(this)">
           <div class="upload-icon" style="font-size:24px;margin-bottom:6px;">📐</div>
           <div class="upload-title" style="font-size:13px;">Drop site plans, drawings, or surveys here</div>
@@ -436,7 +436,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
       <!-- Upload zone: denial letter -->
       <div class="fg">
         <label>ISD Denial / Refusal Letter <span style="color:var(--er);font-weight:700;">*</span></label>
-        <div class="upload-zone" id="zone-denial" ondragover="dragOver(event,'zone-denial')" ondragleave="dragLeave('zone-denial')" ondrop="dropFile(event,'denial')">
+        <div class="upload-zone" id="zone-denial" ondragover="dragOver(event,'zone-denial')" ondragleave="dragLeave('zone-denial')" ondrop="dropFile(event,'denial')" onclick="document.getElementById('file-denial').click()">
           <input type="file" id="file-denial" accept=".pdf,.png,.jpg,.jpeg" onchange="handleFile(this,'denial')">
           <div class="upload-icon">📄</div>
           <div class="upload-title">Drop your denial letter here</div>
@@ -448,7 +448,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
       <!-- Upload zone: plans -->
       <div class="fg">
         <label>Architectural Plans / Site Drawings <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional but recommended</span></label>
-        <div class="upload-zone" id="zone-plans" ondragover="dragOver(event,'zone-plans')" ondragleave="dragLeave('zone-plans')" ondrop="dropFile(event,'plans')">
+        <div class="upload-zone" id="zone-plans" ondragover="dragOver(event,'zone-plans')" ondragleave="dragLeave('zone-plans')" ondrop="dropFile(event,'plans')" onclick="document.getElementById('file-plans').click()">
           <input type="file" id="file-plans" accept=".pdf,.png,.jpg,.jpeg" multiple onchange="handleFile(this,'plans')">
           <div class="upload-icon">📐</div>
           <div class="upload-title">Drop your plans here</div>
@@ -848,7 +848,8 @@ async function runNewPermit(){
     document.getElementById('np-result').innerHTML=resultHtml('Project Permit Analysis','Boston Zoning Code + 780 CMR',raw,
       `<button class="btn btn-p btn-sm" onclick="switchTab('checklist',document.querySelectorAll('.mtab')[3])">Go to pre-submit checklist →</button><button class="btn btn-o btn-sm" onclick="window.print()">Print / Save PDF 🖨</button>`);
   }catch(e){
-    document.getElementById('np-result').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Connection error — please try again.</div></div>';
+    document.getElementById('np-result').innerHTML=`<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Error: ${e.message}. Please try again.</div></div>`;
+    console.error('runNewPermit error:',e);
   }
   btn.disabled=false;btn.innerHTML='🏗️ Analyze My Project';
 }
@@ -1019,7 +1020,8 @@ async function runAnalysis(){
     document.getElementById('result-area').innerHTML=resultHtml('Action Plan Generated','Boston Zoning Code + 780 CMR',raw,
       `<button class="btn btn-p btn-sm" onclick="followUp('Help me draft a full formal ZBA appeal letter based on this denial analysis.')">Draft full appeal letter ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What neighbor outreach strategy should I use for my Boston ZBA hearing?')">Neighbor strategy ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What should I bring to my ZBA hearing and how should I present my case?')">Hearing prep ↗</button><button class="btn btn-o btn-sm" onclick="window.print()">Print 🖨</button>`);
   }catch(e){
-    document.getElementById('result-area').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Connection error — please try again.</div></div>';
+    document.getElementById('result-area').innerHTML=`<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Error: ${e.message}. Please try again.</div></div>`;
+    console.error('runAnalysis error:',e);
   }
   btn.disabled=false;btn.innerHTML='🔍 Analyze Denial &amp; Generate Action Plan';
 }
