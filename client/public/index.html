@@ -199,8 +199,34 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 .footer-links{display:flex;gap:16px;}
 .fl{font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;}
 .fl:hover{color:var(--bg);}
-@media(max-width:700px){.frow,.mrow,.vgrid{grid-template-columns:1fr;}.mtabs{grid-template-columns:1fr 1fr;}}
-@media(max-width:420px){.mtabs{grid-template-columns:1fr;}}
+@media(max-width:700px){
+  .frow,.mrow,.vgrid{grid-template-columns:1fr;}
+  .mtabs{grid-template-columns:1fr 1fr;}
+  .nav-inner{padding:10px 16px;}
+  .nav-links{display:none;}
+  .lang-toggle{margin-left:auto;}
+  .hero{padding:100px 16px 60px;}
+  .hero h1{font-size:28px;}
+  .hero-desc{font-size:14px;}
+  .main{padding:0 16px 60px;}
+  .card{padding:1rem;}
+  .mtab{padding:10px 8px;}
+  .mtab-icon{font-size:18px;}
+  .mtab-lbl{font-size:11px;}
+  .mtab-sub{display:none;}
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .zoning-grid{grid-template-columns:1fr 1fr;}
+  .chat-window{width:calc(100vw - 32px);right:16px;bottom:80px;}
+  .ract{flex-wrap:wrap;}
+  .ract .btn{font-size:11px;padding:6px 10px;}
+  .rhd{flex-wrap:wrap;gap:6px;}
+  .upload-zone{padding:1rem;}
+}
+@media(max-width:420px){
+  .mtabs{grid-template-columns:1fr 1fr;}
+  .hero h1{font-size:22px;}
+  .dash-grid{grid-template-columns:1fr;}
+}
 
 /* ── CHATBOT ── */
 .chat-bubble{position:fixed;bottom:28px;right:28px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#0B2D6B,#1a50b0);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(11,45,107,0.4);z-index:2000;transition:all 0.25s;font-size:24px;}
@@ -632,6 +658,19 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <div class="tls"><div class="tl-left"><div class="tl-num">5</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">ZBA public hearing</div><div class="tl-body">Weekly hearings. You or a representative (attorney, architect, contractor) must appear. Bring: revised plans, photos, tax bill, neighbor petitions, and hardship documentation for variances.</div><div class="tl-tip">⚖️ Variance = unique physical hardship specific to your property. Special permit = lower standard.</div></div></div>
         <div class="tls"><div class="tl-left"><div class="tl-num">6</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">ZBA decision &amp; finalization</div><div class="tl-body">Meet every condition before ISD issues the final permit. "Dismissed without prejudice" lets you refile sooner than the 1-year wait. Track your case at boston.gov ZBA decisions page.</div></div></div>
       </div>
+      <!-- Case Number Lookup -->
+      <div class="card" style="margin-top:1.5rem;">
+        <div class="card-hd">
+          <div><div class="card-title">BOA / ISD Case Lookup</div><div class="card-sub">Enter a case number to see its type, status guidance, and where to track it</div></div>
+          <span class="cbadge cb-blue">Live</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:1rem;">
+          <input type="text" id="case-input" placeholder="e.g. BOA-1542657 or ERT-1526697" style="flex:1;" onkeydown="if(event.key==='Enter')lookupCase()">
+          <button class="btn btn-p" id="case-btn" onclick="lookupCase()" style="white-space:nowrap;">Look Up</button>
+        </div>
+        <div id="case-result"></div>
+      </div>
+
       <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-p btn-sm" onclick="followUp('Give me 5 specific strategies to improve my ZBA approval odds at a Boston hearing, including neighbor outreach, presentation tips, and documentation.')">✨ Get AI Hearing Strategies</button>
         <a class="btn btn-o btn-sm" href="https://www.boston.gov/departments/inspectional-services/how-file-appeal-zoning-board" target="_blank">Official ZBA Filing ↗</a>
@@ -946,7 +985,7 @@ async function runNewPermit(){
       if(btn) btn.style.display='inline-flex';
     }
   }catch(e){
-    document.getElementById('np-result').innerHTML=`<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Error: ${e.message}. Please try again.</div></div>`;
+    document.getElementById('np-result').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Something went wrong processing your request. Please check your inputs and try again.</div></div>';
     console.error('runNewPermit error:',e);
   }
   btn.disabled=false;btn.innerHTML='🏗️ Analyze My Project';
@@ -1137,7 +1176,7 @@ async function runAnalysis(){
   const violations=Array.from(document.querySelectorAll('.vchip.sel')).map(c=>c.dataset.v).join(', ')||'Not specified';
   const ctx=document.getElementById('ctx-in').value.trim()||'None';
   const btn=document.getElementById('analyze-btn');
-  btn.disabled=true;btn.textContent='Analyzing…';
+  btn.disabled=true;btn.innerHTML='<span class="btn-spinner"></span>Analyzing…';
   document.getElementById('result-area').innerHTML=loadingHtml('Analyzing your denial…','Cross-referencing Boston Zoning Code, ISD requirements, and 780 CMR');
 
   // Build content — include uploads if present
@@ -1175,7 +1214,7 @@ async function runAnalysis(){
       if(btn) btn.style.display='inline-flex';
     }
   }catch(e){
-    document.getElementById('result-area').innerHTML=`<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Error: ${e.message}. Please try again.</div></div>`;
+    document.getElementById('result-area').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Something went wrong. Please check your internet connection and try again. If the problem persists, try pasting the denial text directly instead of uploading.</div></div>';
     console.error('runAnalysis error:',e);
   }
   btn.disabled=false;btn.innerHTML='🔍 Analyze Denial &amp; Generate Action Plan';
@@ -1226,7 +1265,7 @@ async function downloadAppealLetter(){
     a.click();
     URL.revokeObjectURL(url);
   } catch(e) {
-    alert('Error generating appeal letter: ' + e.message);
+    alert('Could not generate the appeal letter. Please run the denial analysis first, then try again.');
     console.error(e);
   }
   btn.disabled = false;
@@ -1278,7 +1317,7 @@ async function downloadRedlinedPlans(source){
     a.click();
     URL.revokeObjectURL(url);
   } catch(e){
-    alert('Error generating redlined PDF: '+e.message);
+    alert('Could not generate the redlined PDF. Make sure your plan file is a valid PDF or image under 20MB, then try again.');
     console.error(e);
   }
   btn.disabled=false;
@@ -1405,18 +1444,68 @@ async function shareReport(rid){
     const toast = document.getElementById('share-toast');
     toast.classList.add('show');
     setTimeout(()=>toast.classList.remove('show'), 3000);
-  } catch(e){ alert('Could not generate share link: '+e.message); }
+  } catch(e){ alert('Could not create a share link right now. Please try again in a moment.'); }
 }
 
 // ═══ ZONING LOOKUP ═══
+async function lookupCase(){
+  const caseNum = document.getElementById('case-input').value.trim();
+  if(!caseNum) return;
+  const el = document.getElementById('case-result');
+  const btn = document.getElementById('case-btn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="btn-spinner-dark"></span>Looking up…';
+  el.innerHTML='<div class="loading-s"><div class="spinner"></div><div class="loading-t">Looking up case <strong>'+caseNum+'</strong>…</div></div>';
+  try {
+    const r = await fetch('/api/case?caseNumber='+encodeURIComponent(caseNum));
+    const d = await r.json();
+    if(d.error){ el.innerHTML='<div class="callout co-gold" style="margin-top:0;"><div class="co-icon">⚠️</div><div>'+d.error+'</div></div>'; return; }
+    if(d.found){
+      el.innerHTML=`<div class="zoning-result">
+        <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--bb);margin-bottom:4px;">${d.caseNumber}</div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:1rem;">${d.address}</div>
+        <div class="zoning-grid">
+          <div class="zoning-cell"><div class="zoning-cell-label">Status</div><div class="zoning-cell-val" style="color:var(--ok);">${d.status}</div></div>
+          <div class="zoning-cell"><div class="zoning-cell-label">Type</div><div class="zoning-cell-val">${d.description}</div></div>
+          <div class="zoning-cell"><div class="zoning-cell-label">Applicant</div><div class="zoning-cell-val">${d.applicant}</div></div>
+        </div>
+        ${d.issued?'<div style="font-size:12px;color:var(--t3);margin-top:10px;">Issued: '+d.issued+(d.expiration?' · Expires: '+d.expiration:'')+'</div>':''}
+        <div style="margin-top:1rem;">
+          <a class="btn btn-o btn-sm" href="https://permitsonline.boston.gov" target="_blank">View on Boston Permits Online ↗</a>
+        </div>
+      </div>`;
+    } else {
+      el.innerHTML=`<div class="zoning-result">
+        <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--bb);margin-bottom:8px;">${d.caseNumber}</div>
+        <div class="zoning-grid" style="margin-bottom:1rem;">
+          <div class="zoning-cell"><div class="zoning-cell-label">Case Type</div><div class="zoning-cell-val">${d.caseType||'Unknown'}</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:1rem;">${d.description||''}</div>
+        ${d.tips?'<div class="callout co-blue" style="margin-bottom:1rem;"><div class="co-icon">💡</div><div>'+d.tips+'</div></div>':''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <a class="btn btn-p btn-sm" href="${d.lookupUrl||'https://permitsonline.boston.gov'}" target="_blank">Track This Case ↗</a>
+          <a class="btn btn-o btn-sm" href="https://www.boston.gov/departments/inspectional-services" target="_blank">ISD Boston ↗</a>
+        </div>
+      </div>`;
+    }
+  } catch(e){
+    el.innerHTML='<div class="callout co-gold" style="margin-top:0;"><div class="co-icon">⚠️</div><div>Could not look up that case number. Try checking on <a href="https://permitsonline.boston.gov" target="_blank">Boston Permits Online</a> directly.</div></div>';
+  }
+  btn.disabled=false;
+  btn.innerHTML='Look Up';
+}
+
 async function lookupZoning(){
   const addr = document.getElementById('zoning-addr').value.trim();
   if(!addr) return;
   const el = document.getElementById('zoning-result');
+  const lookupBtn = document.querySelector('[onclick="lookupZoning()"]');
+  if(lookupBtn){ lookupBtn.disabled=true; lookupBtn.innerHTML='<span class="btn-spinner-dark"></span>Looking up…'; }
   el.innerHTML = '<div class="loading-s"><div class="spinner"></div><div class="loading-t">Looking up <strong>'+addr+'</strong>…</div></div>';
   try {
     const r = await fetch('/api/zoning/lookup?address='+encodeURIComponent(addr));
     const d = await r.json();
+    if(lookupBtn){ lookupBtn.disabled=false; lookupBtn.innerHTML='Look Up'; }
     if(d.error){ el.innerHTML='<div class="callout co-gold" style="margin-top:0;"><div class="co-icon">⚠️</div><div>'+d.error+'</div></div>'; return; }
     const z = d.zoningDistrict;
     el.innerHTML=`<div class="zoning-result">
@@ -1436,7 +1525,8 @@ async function lookupZoning(){
       </div>
     </div>`;
   } catch(e){
-    el.innerHTML='<div class="callout co-gold" style="margin-top:0;"><div class="co-icon">⚠️</div><div>Lookup failed: '+e.message+'</div></div>';
+    if(lookupBtn){ lookupBtn.disabled=false; lookupBtn.innerHTML='Look Up'; }
+    el.innerHTML='<div class="callout co-gold" style="margin-top:0;"><div class="co-icon">⚠️</div><div>Could not find that address. Try entering the full street address including city, e.g. "548 East Third Street, South Boston, MA"</div></div>';
   }
 }
 
