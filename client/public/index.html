@@ -791,9 +791,9 @@ async function runNewPermit(){
         npContent.push({type:'image',source:{type:'base64',media_type:mtype,data:b64}});
       }
     }
-    npContent.push({type:'text',text:`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nThe uploaded file(s) are the applicant's site plans or drawings. Please review them along with the project details above. Determine permit requirements, ZBA risk, required documents, and next steps.`});
+    npContent.push({type:'text',text:`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nThe uploaded file(s) are the applicant's site plans or drawings. Please review them along with the project details above. Follow all sections in your instructions exactly, including Suggestions to Improve Approval Odds.`});
   } else {
-    npContent=`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nDetermine permit requirements, ZBA risk, required documents, and next steps.`;
+    npContent=`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nFollow all sections in your instructions exactly, including Suggestions to Improve Approval Odds.`;
   }
   const msg = npContent;
   try{
