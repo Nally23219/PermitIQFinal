@@ -258,6 +258,7 @@
     .cta-title { font-family: 'Playfair Display', serif; font-size: clamp(36px,5vw,60px); font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 20px; }
     .cta-sub { font-size: 18px; color: var(--muted); margin-bottom: 40px; line-height: 1.6; }
 
+    /* ── FOOTER ── */
     footer {
       padding: 40px 48px; border-top: 1px solid var(--border);
       display: flex; justify-content: space-between; align-items: center;
@@ -269,6 +270,7 @@
     .footer-links a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
     .footer-links a:hover { color: var(--white); }
 
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       nav { padding: 16px 20px; }
       .features-grid { grid-template-columns: 1fr; }
@@ -279,62 +281,176 @@
       footer { flex-direction: column; text-align: center; padding: 32px 20px; }
     }
 
+    /* ── ANIMATIONS ── */
     .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
-
 <body>
 
-<nav>
-  <div class="nav-logo">Permit<span>IQ</span></div>
-  <a href="/index.html" class="nav-cta">Launch App →</a>
-</nav>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Permit<span>IQ</span></div>
+    <a href="/index.html" class="nav-cta">Launch App →</a>
+  </nav>
 
-<!-- HERO (unchanged, original version restored) -->
-<section class="hero">
-  <div class="hero-bg">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-    <div class="grid-overlay"></div>
-  </div>
-
-  <div class="hero-inner">
-    <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Built for Boston · Powered by AI</div>
-
-    <h1>
-      Faster permits.<br><em>Fewer denials.</em><br>Less guesswork.
-    </h1>
-
-    <p class="hero-sub">
-      PermitIQ is an AI-powered permitting assistant built on Boston's Zoning Code, ISD requirements, and 780 CMR. From new project planning to ZBA appeal prep — instant guidance, every step of the way.
-    </p>
-
-    <div class="hero-actions">
-      <a href="/index.html" class="btn-primary">Launch PermitIQ →</a>
-      <a href="#features" class="btn-secondary">See How It Works</a>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+      <div class="grid-overlay"></div>
     </div>
-
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-num">10<span>+</span></div><div class="stat-label">Boston Zoning Articles</div></div>
-      <div class="stat"><div class="stat-num">6<span>s</span></div><div class="stat-label">Avg. Analysis Time</div></div>
-      <div class="stat"><div class="stat-num">5<span>x</span></div><div class="stat-label">Faster Than Manual Review</div></div>
-      <div class="stat"><div class="stat-num">EN<span>/ES</span></div><div class="stat-label">English & Spanish</div></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Built for Boston · Powered by AI</div>
+      <h1>Faster permits.<br><em>Fewer denials.</em><br>Less guesswork.</h1>
+      <p class="hero-sub">PermitIQ is an AI-powered permitting assistant built on Boston's Zoning Code, ISD requirements, and 780 CMR. From new project planning to ZBA appeal prep — instant guidance, every step of the way.</p>
+      <div class="hero-actions">
+        <a href="/index.html" class="btn-primary">Launch PermitIQ →</a>
+        <a href="#features" class="btn-secondary">See How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">10<span>+</span></div><div class="stat-label">Boston Zoning Articles</div></div>
+        <div class="stat"><div class="stat-num">6<span>s</span></div><div class="stat-label">Avg. Analysis Time</div></div>
+        <div class="stat"><div class="stat-num">5<span>x</span></div><div class="stat-label">Faster Than Manual Review</div></div>
+        <div class="stat"><div class="stat-num">EN<span>/ES</span></div><div class="stat-label">English & Spanish</div></div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- everything else unchanged -->
-... (rest of your original sections remain exactly the same)
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="section-inner">
+      <div class="fade-up">
+        <div class="section-tag">What PermitIQ Does</div>
+        <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+        <p class="section-sub">Six tools in one platform, built specifically for Boston's permitting process.</p>
+      </div>
+      <div class="features-grid fade-up">
+        <div class="feature-card">
+          <div class="feature-icon">🏗️</div>
+          <div class="feature-title">New Permit Advisor</div>
+          <div class="feature-desc">Describe your project and get instant guidance on what permits you need, ZBA risk assessment, and a step-by-step action plan — before you file anything.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title">Denial Analyzer</div>
+          <div class="feature-desc">Upload your ISD denial letter and construction plans. Get a full violation breakdown, approval odds, and a downloadable ZBA appeal letter in seconds.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📐</div>
+          <div class="feature-title">AI Plan Redlines</div>
+          <div class="feature-desc">Upload your construction plans and receive a downloadable PDF with red annotation boxes showing exactly what needs to change on each sheet for code compliance.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📍</div>
+          <div class="feature-title">Address Zoning Lookup</div>
+          <div class="feature-desc">Type any Boston address to instantly see its zoning district, article, land use, and dimensional requirements — no more hunting through the BPDA zoning viewer.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔎</div>
+          <div class="feature-title">BOA / ISD Case Lookup</div>
+          <div class="feature-desc">Enter any BOA or ISD case number to understand what type of case it is, what stage it's at, and exactly where to track its status online.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-title">24/7 Permit Assistant</div>
+          <div class="feature-desc">A live AI chatbot trained on Boston zoning, ISD procedures, and 780 CMR. Ask anything about permits, zoning, setbacks, or the ZBA process at any time.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.1 });
+  <!-- HOW IT WORKS -->
+  <section class="section how-section">
+    <div class="section-inner">
+      <div class="fade-up">
+        <div class="section-tag">How It Works</div>
+        <h2 class="section-title">From upload to action plan<br>in under a minute.</h2>
+      </div>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-title">Describe or Upload</div>
+          <div class="step-desc">Enter your project details or upload your ISD denial letter and construction plans directly into PermitIQ.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-title">AI Analyzes</div>
+          <div class="step-desc">Claude AI cross-references your submission against Boston Zoning Code, ISD requirements, and 780 CMR in real time.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-title">Get Your Plan</div>
+          <div class="step-desc">Receive a full action plan with approval odds, specific code citations, and suggested plan edits — in plain English.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-title">Download & File</div>
+          <div class="step-desc">Download your redlined plans, ZBA appeal letter, or pre-submission checklist and go straight to filing.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
+  <!-- BUILT FOR BOSTON -->
+  <section class="boston-section">
+    <div class="boston-inner">
+      <div class="fade-up">
+        <div class="section-tag">Built for Boston</div>
+        <h2 class="section-title">Every detail of Boston's system, built in.</h2>
+        <p class="section-sub" style="margin-bottom:0;">PermitIQ isn't a generic AI tool — it's trained on the specific articles, procedures, and quirks of Boston's permitting system.</p>
+        <div class="boston-list">
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>All 80+ Boston Zoning Articles</strong><span>Article 68 South Boston, Article 80 BPDA, Article 37 Green Buildings, and more</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>ISD Procedures & Workflows</strong><span>Short form, long form, plan review, trade permits, and certificate of occupancy requirements</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>ZBA Process End-to-End</strong><span>Filing deadlines, hearing prep, appeal language, neighbor outreach strategy, and hearing tips</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>780 CMR State Building Code</strong><span>9th Edition Massachusetts State Building Code cross-referenced against every analysis</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>English & Spanish</strong><span>Full bilingual support for Boston's diverse communities and neighborhoods</span></div></div>
+        </div>
+      </div>
+      <div class="boston-visual fade-up">
+        <div class="bv-label">Sample Analysis Output</div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Address</div><div class="bv-stat-val">548 E Third St, South Boston</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Zoning District</div><div class="bv-stat-val">3F-2000 · Article 68</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Violations Found</div><div class="bv-stat-val gold">10 dimensional violations</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Relief Required</div><div class="bv-stat-val">ZBA Variance</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Approval Odds (as-filed)</div><div class="bv-stat-val gold">32%</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Odds After Plan Edits</div><div class="bv-stat-val green">71%</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Analysis Time</div><div class="bv-stat-val green">8 seconds</div></div>
+      </div>
+    </div>
+  </section>
 
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner fade-up">
+      <h2 class="cta-title">Ready to see it in action?</h2>
+      <p class="cta-sub">PermitIQ is live and free to try. Upload a denial letter or describe a project and see an AI-powered analysis in seconds.</p>
+      <a href="/index.html" class="btn-primary" style="font-size:17px;padding:18px 48px;">Launch PermitIQ →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Permit<span>IQ</span></div>
+    <div style="font-size:12px;">Built on Boston Zoning Code · ISD Requirements · 780 CMR · Powered by Claude AI</div>
+    <div class="footer-links">
+      <a href="/index.html">Launch App</a>
+      <a href="https://www.boston.gov/departments/inspectional-services" target="_blank">ISD Boston</a>
+      <a href="https://bostonplans.org" target="_blank">BPDA</a>
+    </div>
+  </footer>
+
+  <script>
+    // Fade-up scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
