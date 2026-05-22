@@ -11,9 +11,9 @@ const anthropic = new Anthropic({
 // This creates a basic webpage when someone visits your Render URL
 app.get('/', async (req, res) => {
   try {
-    // This is just a test to prove your AI connection works
+    // This is a test to prove your AI connection works using a valid model string
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-latest',
       max_tokens: 100,
       messages: [{ role: 'user', content: 'Say hello!' }],
     });
