@@ -652,16 +652,16 @@ Start this section with a clear percentage like "**Approval Likelihood: 75%**" f
 ## Action Plan
 Numbered steps the applicant should take immediately.
 
+## Suggestions to Improve Approval Odds
+Provide 3-5 specific, actionable suggestions the applicant can implement RIGHT NOW to improve their chances. Focus on things that move the needle: design tweaks, documentation, neighbor outreach, timing, who to bring to the hearing. Be concrete — not generic advice.
+
 ## Draft Appeal Language
 A short paragraph the applicant can use verbatim in their ZBA filing.
 
 ## Documents to Gather
 A bulleted list of required documents specific to this denial.
 
-Be practical and specific. Cite Boston Zoning Code articles. Flag when an attorney or architect is strongly recommended.
-
-## Suggestions to Improve Approval Odds
-Provide 3-5 specific, actionable suggestions the applicant can implement RIGHT NOW to improve their chances. Focus on things that actually move the needle: design tweaks, documentation, neighbor outreach, timing, who to bring to the hearing, etc. Be concrete — not generic advice.`;
+Be practical and specific. Cite Boston Zoning Code articles. Flag when an attorney or architect is strongly recommended.`;
 
 const NP_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code, ISD procedures, and 780 CMR.
 
@@ -675,6 +675,9 @@ Short Form, Long Form, or No Permit. If multiple permits needed (building + elec
 
 **ZONING RISK ASSESSMENT**
 Based on the project and neighborhood: Low / Medium / High risk of denial. Identify the specific dimensional or use standards most likely to be an issue (FAR, setbacks, height, lot coverage, use table).
+
+**SUGGESTIONS TO IMPROVE APPROVAL ODDS**
+3-5 specific, concrete actions the applicant can take right now to maximize their chances. Boston-specific tips only — no generic advice.
 
 **DO YOU NEED ZBA?**
 Clear yes or no with explanation. If ZBA may be needed, identify which type of relief (variance vs special permit).
@@ -809,10 +812,11 @@ async function runNewPermit(){
 // ═══ FILE UPLOAD HANDLING ═══
 let uploadedFiles={denial:[], plans:[], npplans:[], 'da-denial':[], 'da-plans':[]};
 
-function dragOver(e,zoneId){e.preventDefault();document.getElementById(zoneId).classList.add('drag');}
+function dragOver(e,zoneId){e.preventDefault();e.stopPropagation();document.getElementById(zoneId).classList.add('drag');}
 function dragLeave(zoneId){document.getElementById(zoneId).classList.remove('drag');}
 function dropFile(e,type){
   e.preventDefault();
+  e.stopPropagation();
   const zoneId=type==='denial'?'zone-denial':'zone-plans';
   document.getElementById(zoneId).classList.remove('drag');
   handleFileList(e.dataTransfer.files,type);
@@ -827,7 +831,7 @@ function handleFileList(files,type){
   });
   renderFileList(type);
 }
-function dropNPFile(e){e.preventDefault();dragLeave('zone-np-plans');handleNPFileList(e.dataTransfer.files);}
+function dropNPFile(e){e.preventDefault();e.stopPropagation();dragLeave('zone-np-plans');handleNPFileList(e.dataTransfer.files);}
 function handleNPFile(input){handleNPFileList(input.files);}
 function handleNPFileList(files){
   Array.from(files).slice(0,5).forEach(f=>{
@@ -858,7 +862,7 @@ function removeFile(type,idx){
 }
 
 // Denial Analyzer uploads
-function dropDAFile(e,type){e.preventDefault();dragLeave('zone-'+type.replace('-','_'));handleDAFileList(e.dataTransfer.files,type);}
+function dropDAFile(e,type){e.preventDefault();e.stopPropagation();dragLeave('zone-'+type);handleDAFileList(e.dataTransfer.files,type);}
 function handleDAFile(input,type){handleDAFileList(input.files,type);}
 function handleDAFileList(files,type){
   const max=type==='da-denial'?1:5;
