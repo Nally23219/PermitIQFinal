@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PermitIQ Boston — AI-Powered Permitting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0a1628;
+      --navy2: #0d1f3c;
+      --blue: #1a50b0;
+      --bright: #1e6fff;
+      --accent: #00c8ff;
+      --gold: #f5b400;
+      --white: #ffffff;
+      --offwhite: #f4f7ff;
+      --muted: #6b8ab0;
+      --border: rgba(100,160,255,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(24px);
+      background: rgba(10,22,40,0.75);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-cta {
+      background: var(--bright); color: #fff;
+      border: none; border-radius: 10px;
+      padding: 10px 24px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+      text-decoration: none; display: inline-block;
+    }
+    .nav-cta:hover { background: #0050cc; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.35;
+    }
+    .orb1 { width: 600px; height: 600px; background: radial-gradient(circle, #1e6fff, transparent); top: -100px; left: -150px; animation: drift 12s ease-in-out infinite alternate; }
+    .orb2 { width: 500px; height: 500px; background: radial-gradient(circle, #00c8ff, transparent); top: 50px; right: -100px; animation: drift 9s ease-in-out infinite alternate-reverse; }
+    .orb3 { width: 400px; height: 400px; background: radial-gradient(circle, #f5b400 20%, transparent); bottom: -50px; left: 40%; animation: drift 14s ease-in-out infinite alternate; }
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.05); } }
+
+    .grid-overlay {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(100,160,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(100,160,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 820px; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(30,111,255,0.12);
+      border: 1px solid rgba(30,111,255,0.25);
+      color: #7dd3fc;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 6px 16px; border-radius: 20px;
+      margin-bottom: 28px;
+    }
+    .eyebrow-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.5; transform:scale(1.4); } }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(44px, 7vw, 80px);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--bright));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--muted); line-height: 1.7; font-weight: 300;
+      max-width: 600px; margin: 0 auto 48px;
+    }
+    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--bright); color: #fff;
+      padding: 16px 36px; border-radius: 12px;
+      font-size: 16px; font-weight: 600;
+      border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.25s; text-decoration: none; display: inline-block;
+      box-shadow: 0 8px 32px rgba(30,111,255,0.4);
+    }
+    .btn-primary:hover { background: #0050cc; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(30,111,255,0.5); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white); padding: 16px 32px; border-radius: 12px;
+      font-size: 16px; font-weight: 500;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.25s; text-decoration: none; display: inline-block;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+    .hero-stats {
+      display: flex; justify-content: center; gap: 48px;
+      margin-top: 64px; padding-top: 48px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px; font-weight: 900; color: var(--white);
+      line-height: 1;
+    }
+    .stat-num span { color: var(--accent); }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    /* ── FEATURES ── */
+    .section { padding: 100px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-tag {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 4vw, 52px); font-weight: 900;
+      line-height: 1.1; letter-spacing: -1px; margin-bottom: 16px;
+    }
+    .section-sub { font-size: 18px; color: var(--muted); line-height: 1.7; max-width: 560px; }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+      margin-top: 64px;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--bright), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .feature-card:hover { background: rgba(30,111,255,0.06); border-color: rgba(30,111,255,0.3); transform: translateY(-4px); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(30,111,255,0.15);
+      border: 1px solid rgba(30,111,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 20px;
+    }
+    .feature-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+    .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; margin-top: 64px; }
+    .step {
+      padding: 32px; position: relative;
+      border-right: 1px solid var(--border);
+    }
+    .step:last-child { border-right: none; }
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px; font-weight: 900;
+      color: rgba(30,111,255,0.15); line-height: 1;
+      margin-bottom: 16px;
+    }
+    .step-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .step-arrow {
+      position: absolute; top: 40px; right: -12px;
+      width: 24px; height: 24px;
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--accent); z-index: 1;
+    }
+    .step:last-child .step-arrow { display: none; }
+
+    /* ── FOR BOSTON ── */
+    .boston-section { padding: 100px 24px; }
+    .boston-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .boston-list { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+    .boston-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 16px 20px; border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .boston-item:hover { background: rgba(30,111,255,0.05); border-color: rgba(30,111,255,0.2); }
+    .boston-check { color: var(--accent); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .boston-text strong { font-size: 14px; display: block; margin-bottom: 2px; }
+    .boston-text span { font-size: 13px; color: var(--muted); }
+
+    .boston-visual {
+      background: rgba(30,111,255,0.06);
+      border: 1px solid rgba(30,111,255,0.15);
+      border-radius: 24px; padding: 40px;
+    }
+    .bv-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+    .bv-stat-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .bv-stat-row:last-child { border-bottom: none; }
+    .bv-stat-name { font-size: 13px; color: var(--muted); }
+    .bv-stat-val { font-size: 14px; font-weight: 700; color: var(--white); }
+    .bv-stat-val.green { color: #4ade80; }
+    .bv-stat-val.gold { color: var(--gold); }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 120px 24px; text-align: center;
+      background: linear-gradient(180deg, transparent, rgba(30,111,255,0.08), transparent);
+    }
+    .cta-inner { max-width: 680px; margin: 0 auto; }
+    .cta-title { font-family: 'Playfair Display', serif; font-size: clamp(36px,5vw,60px); font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 20px; }
+    .cta-sub { font-size: 18px; color: var(--muted); margin-bottom: 40px; line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 48px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--muted); flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: var(--white); }
+    .footer-logo span { color: var(--accent); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .step { border-right: none; border-bottom: 1px solid var(--border); }
+      .boston-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero-stats { gap: 24px; }
+      footer { flex-direction: column; text-align: center; padding: 32px 20px; }
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Permit<span>IQ</span></div>
+    <a href="/index.html" class="nav-cta">Launch App →</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+      <div class="grid-overlay"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Built for Boston · Powered by AI</div>
+      <h1>Faster permits.<br><em>Fewer denials.</em><br>Less guesswork.</h1>
+      <p class="hero-sub">PermitIQ is an AI-powered permitting assistant built on Boston's Zoning Code, ISD requirements, and 780 CMR. From new project planning to ZBA appeal prep — instant guidance, every step of the way.</p>
+      <div class="hero-actions">
+        <a href="/index.html" class="btn-primary">Launch PermitIQ →</a>
+        <a href="#features" class="btn-secondary">See How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">10<span>+</span></div><div class="stat-label">Boston Zoning Articles</div></div>
+        <div class="stat"><div class="stat-num">6<span>s</span></div><div class="stat-label">Avg. Analysis Time</div></div>
+        <div class="stat"><div class="stat-num">5<span>x</span></div><div class="stat-label">Faster Than Manual Review</div></div>
+        <div class="stat"><div class="stat-num">EN<span>/ES</span></div><div class="stat-label">English & Spanish</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="section-inner">
+      <div class="fade-up">
+        <div class="section-tag">What PermitIQ Does</div>
+        <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+        <p class="section-sub">Six tools in one platform, built specifically for Boston's permitting process.</p>
+      </div>
+      <div class="features-grid fade-up">
+        <div class="feature-card">
+          <div class="feature-icon">🏗️</div>
+          <div class="feature-title">New Permit Advisor</div>
+          <div class="feature-desc">Describe your project and get instant guidance on what permits you need, ZBA risk assessment, and a step-by-step action plan — before you file anything.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title">Denial Analyzer</div>
+          <div class="feature-desc">Upload your ISD denial letter and construction plans. Get a full violation breakdown, approval odds, and a downloadable ZBA appeal letter in seconds.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📐</div>
+          <div class="feature-title">AI Plan Redlines</div>
+          <div class="feature-desc">Upload your construction plans and receive a downloadable PDF with red annotation boxes showing exactly what needs to change on each sheet for code compliance.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📍</div>
+          <div class="feature-title">Address Zoning Lookup</div>
+          <div class="feature-desc">Type any Boston address to instantly see its zoning district, article, land use, and dimensional requirements — no more hunting through the BPDA zoning viewer.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔎</div>
+          <div class="feature-title">BOA / ISD Case Lookup</div>
+          <div class="feature-desc">Enter any BOA or ISD case number to understand what type of case it is, what stage it's at, and exactly where to track its status online.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-title">24/7 Permit Assistant</div>
+          <div class="feature-desc">A live AI chatbot trained on Boston zoning, ISD procedures, and 780 CMR. Ask anything about permits, zoning, setbacks, or the ZBA process at any time.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section how-section">
+    <div class="section-inner">
+      <div class="fade-up">
+        <div class="section-tag">How It Works</div>
+        <h2 class="section-title">From upload to action plan<br>in under a minute.</h2>
+      </div>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-title">Describe or Upload</div>
+          <div class="step-desc">Enter your project details or upload your ISD denial letter and construction plans directly into PermitIQ.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-title">AI Analyzes</div>
+          <div class="step-desc">Claude AI cross-references your submission against Boston Zoning Code, ISD requirements, and 780 CMR in real time.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-title">Get Your Plan</div>
+          <div class="step-desc">Receive a full action plan with approval odds, specific code citations, and suggested plan edits — in plain English.</div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-title">Download & File</div>
+          <div class="step-desc">Download your redlined plans, ZBA appeal letter, or pre-submission checklist and go straight to filing.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUILT FOR BOSTON -->
+  <section class="boston-section">
+    <div class="boston-inner">
+      <div class="fade-up">
+        <div class="section-tag">Built for Boston</div>
+        <h2 class="section-title">Every detail of Boston's system, built in.</h2>
+        <p class="section-sub" style="margin-bottom:0;">PermitIQ isn't a generic AI tool — it's trained on the specific articles, procedures, and quirks of Boston's permitting system.</p>
+        <div class="boston-list">
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>All 80+ Boston Zoning Articles</strong><span>Article 68 South Boston, Article 80 BPDA, Article 37 Green Buildings, and more</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>ISD Procedures & Workflows</strong><span>Short form, long form, plan review, trade permits, and certificate of occupancy requirements</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>ZBA Process End-to-End</strong><span>Filing deadlines, hearing prep, appeal language, neighbor outreach strategy, and hearing tips</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>780 CMR State Building Code</strong><span>9th Edition Massachusetts State Building Code cross-referenced against every analysis</span></div></div>
+          <div class="boston-item"><div class="boston-check">✓</div><div class="boston-text"><strong>English & Spanish</strong><span>Full bilingual support for Boston's diverse communities and neighborhoods</span></div></div>
+        </div>
+      </div>
+      <div class="boston-visual fade-up">
+        <div class="bv-label">Sample Analysis Output</div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Address</div><div class="bv-stat-val">548 E Third St, South Boston</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Zoning District</div><div class="bv-stat-val">3F-2000 · Article 68</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Violations Found</div><div class="bv-stat-val gold">10 dimensional violations</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Relief Required</div><div class="bv-stat-val">ZBA Variance</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Approval Odds (as-filed)</div><div class="bv-stat-val gold">32%</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Odds After Plan Edits</div><div class="bv-stat-val green">71%</div></div>
+        <div class="bv-stat-row"><div class="bv-stat-name">Analysis Time</div><div class="bv-stat-val green">8 seconds</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner fade-up">
+      <h2 class="cta-title">Ready to see it in action?</h2>
+      <p class="cta-sub">PermitIQ is live and free to try. Upload a denial letter or describe a project and see an AI-powered analysis in seconds.</p>
+      <a href="/index.html" class="btn-primary" style="font-size:17px;padding:18px 48px;">Launch PermitIQ →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Permit<span>IQ</span></div>
+    <div style="font-size:12px;">Built on Boston Zoning Code · ISD Requirements · 780 CMR · Powered by Claude AI</div>
+    <div class="footer-links">
+      <a href="/index.html">Launch App</a>
+      <a href="https://www.boston.gov/departments/inspectional-services" target="_blank">ISD Boston</a>
+      <a href="https://bostonplans.org" target="_blank">BPDA</a>
+    </div>
+  </footer>
+
+  <script>
+    // Fade-up scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
