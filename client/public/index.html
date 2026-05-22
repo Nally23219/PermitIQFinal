@@ -652,8 +652,8 @@ Start this section with a clear percentage like "**Approval Likelihood: 75%**" f
 ## Action Plan
 Numbered steps the applicant should take immediately.
 
-## Suggestions to Improve Approval Odds
-Provide 3-5 specific, actionable suggestions the applicant can implement RIGHT NOW to improve their chances. Focus on things that move the needle: design tweaks, documentation, neighbor outreach, timing, who to bring to the hearing. Be concrete — not generic advice.
+## Plan Review & Suggested Edits
+If plans were uploaded, review them directly and identify specific changes needed for compliance. For each issue state: what the plan shows, what the code requires (cite article/section), and exactly what must change on the drawings. Be surgical — e.g. "Elevation drawing shows building height at 42 ft; Article 68 §68-29 caps height at 35 ft. Reduce roof height by 7 ft or remove top floor." If no plans uploaded, provide specific design guidance based on the violations described.
 
 ## Draft Appeal Language
 A short paragraph the applicant can use verbatim in their ZBA filing.
@@ -676,8 +676,13 @@ Short Form, Long Form, or No Permit. If multiple permits needed (building + elec
 **ZONING RISK ASSESSMENT**
 Based on the project and neighborhood: Low / Medium / High risk of denial. Identify the specific dimensional or use standards most likely to be an issue (FAR, setbacks, height, lot coverage, use table).
 
-**SUGGESTIONS TO IMPROVE APPROVAL ODDS**
-3-5 specific, concrete actions the applicant can take right now to maximize their chances. Boston-specific tips only — no generic advice.
+**PLAN REVIEW & SUGGESTED EDITS**
+Review the uploaded plans directly. For each issue found, state:
+- What the plan shows (exact dimension, location, or design element)
+- What the code requires (cite the specific article/section)
+- Exactly what needs to change on the plans to achieve compliance
+
+Be specific and surgical — e.g. "Sheet A2 shows rear setback at 2.5 ft; Article 68 §69-8 requires 30 ft minimum. The proposed structure must be relocated or reduced in depth by approximately 27.5 ft." If no plans are uploaded, skip this section.
 
 **DO YOU NEED ZBA?**
 Clear yes or no with explanation. If ZBA may be needed, identify which type of relief (variance vs special permit).
@@ -791,7 +796,7 @@ async function runNewPermit(){
         npContent.push({type:'image',source:{type:'base64',media_type:mtype,data:b64}});
       }
     }
-    npContent.push({type:'text',text:`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nThe uploaded file(s) are the applicant's site plans or drawings. Please review them along with the project details above. Follow all sections in your instructions exactly, including Suggestions to Improve Approval Odds.`});
+    npContent.push({type:'text',text:`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nThe uploaded file(s) are the applicant's site plans or drawings. Please review every sheet carefully. For each code violation you find in the plans, state the exact dimension shown, the code requirement, and the specific edit needed to bring it into compliance. Follow all sections in your instructions.`});
   } else {
     npContent=`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nFollow all sections in your instructions exactly, including Suggestions to Improve Approval Odds.`;
   }
