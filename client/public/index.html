@@ -1314,9 +1314,12 @@ function acceptDisclaimer(){
   document.getElementById('disclaimer-modal').style.display='none';
   localStorage.setItem('piq_disclaimer','1');
 }
-if(localStorage.getItem('piq_disclaimer')) {
-  document.getElementById('disclaimer-modal').style.display='none';
-}
+document.addEventListener('DOMContentLoaded', function(){
+  if(localStorage.getItem('piq_disclaimer')) {
+    var m = document.getElementById('disclaimer-modal');
+    if(m) m.style.display='none';
+  }
+});
 
 // ═══ LANGUAGE ═══
 const TRANSLATIONS = {
