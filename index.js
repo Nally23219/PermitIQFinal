@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000;
 app.get('/', async (req, res) => {
   try {
     // Sending a direct network request to Anthropic's gateway 
-    // using the exact technical model string to bypass Tier restrictions
+    // using the valid Claude 4 generation model string
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -15,7 +15,7 @@ app.get('/', async (req, res) => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-20250514', // Updated to active Claude 4 string
         max_tokens: 100,
         messages: [{ role: 'user', content: 'Say hello!' }],
       }),
