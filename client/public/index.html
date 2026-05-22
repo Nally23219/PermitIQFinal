@@ -655,6 +655,11 @@ Numbered steps the applicant should take immediately.
 ## Plan Review & Suggested Edits
 If plans were uploaded, review them directly and identify specific changes needed for compliance. For each issue state: what the plan shows, what the code requires (cite article/section), and exactly what must change on the drawings. Be surgical — e.g. "Elevation drawing shows building height at 42 ft; Article 68 §68-29 caps height at 35 ft. Reduce roof height by 7 ft or remove top floor." If no plans uploaded, provide specific design guidance based on the violations described.
 
+At the end of this section, you must include BOTH lines exactly as shown:
+CURRENT_ODDS: X%
+REVISED_ODDS: Y%
+Where CURRENT_ODDS is approval likelihood of current plans/situation, REVISED_ODDS is likelihood after all suggested edits are made.
+
 ## Draft Appeal Language
 A short paragraph the applicant can use verbatim in their ZBA filing.
 
@@ -683,6 +688,12 @@ Review the uploaded plans directly. For each issue found, state:
 - Exactly what needs to change on the plans to achieve compliance
 
 Be specific and surgical — e.g. "Sheet A2 shows rear setback at 2.5 ft; Article 68 §69-8 requires 30 ft minimum. The proposed structure must be relocated or reduced in depth by approximately 27.5 ft." If no plans are uploaded, skip this section.
+
+**APPROVAL ODDS**
+You must include BOTH of these lines exactly as shown (fill in the numbers):
+CURRENT_ODDS: X%
+REVISED_ODDS: Y%
+Where CURRENT_ODDS is the estimated approval likelihood of the plans as submitted, and REVISED_ODDS is the estimated approval likelihood if all suggested plan edits are implemented. If no plans uploaded, omit these lines.
 
 **DO YOU NEED ZBA?**
 Clear yes or no with explanation. If ZBA may be needed, identify which type of relief (variance vs special permit).
@@ -737,28 +748,65 @@ function loadingHtml(title,sub){
   return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${sub}</div></div></div><div class="loading-s"><div class="spinner"></div><div class="loading-t">Analyzing against <strong>Boston Zoning Code</strong> and ISD requirements…</div></div></div>`;
 }
 
-function extractLikelihood(body){
-  const m = body.match(/Approval Likelihood[:\s]*([\d]+)%/i);
-  return m ? parseInt(m[1]) : null;
+function extractOdds(body){
+  const cur = body.match(/CURRENT_ODDS:\s*(\d+)%/i);
+  const rev = body.match(/REVISED_ODDS:\s*(\d+)%/i);
+  // Also fall back to old "Approval Likelihood" format
+  const old = body.match(/Approval Likelihood[:\s]*(\d+)%/i);
+  return {
+    current: cur ? parseInt(cur[1]) : (old ? parseInt(old[1]) : null),
+    revised: rev ? parseInt(rev[1]) : null
+  };
 }
-function likelihoodBar(pct){
+function oddsBar(pct, label){
   if(!pct) return '';
   const color = pct>=70?'var(--ok)':pct>=45?'var(--bg)':'var(--er)';
-  const label = pct>=70?'Good odds':'Moderate odds — strong prep needed';
+  return `<div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;">
+      <span style="color:var(--t2);">${label}</span>
+      <span style="font-weight:700;color:${color};">${pct}%</span>
+    </div>
+    <div style="height:10px;background:var(--bd);border-radius:5px;overflow:hidden;">
+      <div style="height:100%;width:${pct}%;background:${color};border-radius:5px;transition:width 0.8s ease;"></div>
+    </div>
+  </div>`;
+}
+function likelihoodSection(body){
+  const {current, revised} = extractOdds(body);
+  if(!current) return '';
+  if(current && revised){
+    const diff = revised - current;
+    const diffColor = diff>0?'var(--ok)':diff<0?'var(--er)':'var(--t2)';
+    const arrow = diff>0?'↑':'↓';
+    return `<div style="padding:16px 20px;background:#f8f9fc;border-bottom:1px solid var(--bd);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-weight:600;font-size:13px;color:var(--t1);">Approval Likelihood</span>
+        <span style="font-size:12px;font-weight:700;color:${diffColor};">${arrow} ${Math.abs(diff)}% improvement with suggested edits</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        ${oddsBar(current,'As submitted')}
+        ${oddsBar(revised,'After plan edits')}
+      </div>
+    </div>`;
+  }
+  // Single bar fallback
+  const color = current>=70?'var(--ok)':current>=45?'var(--bg)':'var(--er)';
+  const label = current>=70?'Good odds':'Moderate — strong prep needed';
   return `<div style="padding:14px 20px;background:#f8f9fc;border-bottom:1px solid var(--bd);">
     <div style="display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;">
       <span style="font-weight:600;color:var(--t1);">Approval Likelihood</span>
-      <span style="font-weight:700;color:${color};">${pct}% — ${label}</span>
+      <span style="font-weight:700;color:${color};">${current}% — ${label}</span>
     </div>
     <div style="height:8px;background:var(--bd);border-radius:4px;overflow:hidden;">
-      <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width 0.6s ease;"></div>
+      <div style="height:100%;width:${current}%;background:${color};border-radius:4px;transition:width 0.6s ease;"></div>
     </div>
   </div>`;
 }
 function resultHtml(title,meta,body,actions){
   const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  const pct=extractLikelihood(body);
-  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>${likelihoodBar(pct)}<div class="rbody" id="report-body">${fmt(body)}</div><div class="ract">${actions}</div></div>`;
+  // Strip the raw CURRENT_ODDS/REVISED_ODDS lines from body before displaying
+  const cleanBody = body.replace(/CURRENT_ODDS:\s*\d+%\n?/gi,'').replace(/REVISED_ODDS:\s*\d+%\n?/gi,'');
+  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>${likelihoodSection(body)}<div class="rbody" id="report-body">${fmt(cleanBody)}</div><div class="ract">${actions}</div></div>`;
 }
 
 // ═══ NEW PERMIT ═══
