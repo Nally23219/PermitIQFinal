@@ -497,24 +497,24 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
       <div class="callout co-blue"><div class="co-icon">ℹ️</div><div>Upload your ISD denial letter and/or construction plans, or paste the denial text below. The AI will classify your violation, determine if it can be cured without ZBA, and generate a step-by-step action plan.</div></div>
 
       <!-- Upload zones -->
-      <div class="frow" style="margin-bottom:14px;">
-        <div class="fg" style="margin:0;">
-          <label>ISD Denial / Refusal Letter <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional — upload or paste below</span></label>
-          <div class="upload-zone" id="zone-da-denial" style="padding:1.25rem;" ondragover="dragOver(event,'zone-da-denial')" ondragleave="dragLeave('zone-da-denial')" ondrop="dropDAFile(event,'da-denial')" onclick="document.getElementById('file-da-denial').click()">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:6px;">Denial Letter <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
+          <div class="upload-zone" id="zone-da-denial" style="padding:1rem;min-height:90px;" ondragover="dragOver(event,'zone-da-denial')" ondragleave="dragLeave('zone-da-denial')" ondrop="dropDAFile(event,'da-denial')" onclick="document.getElementById('file-da-denial').click()">
             <input type="file" id="file-da-denial" accept=".pdf,.png,.jpg,.jpeg" style="display:none;" onchange="handleDAFile(this,'da-denial')">
-            <div class="upload-icon" style="font-size:24px;margin-bottom:4px;">📄</div>
-            <div class="upload-title" style="font-size:13px;">Drop denial letter here</div>
-            <div class="upload-sub">PDF, PNG, or JPG</div>
+            <div style="font-size:22px;margin-bottom:4px;">📄</div>
+            <div class="upload-title" style="font-size:12px;">Drop denial letter here</div>
+            <div class="upload-sub" style="font-size:11px;">PDF, PNG, or JPG</div>
           </div>
           <div id="list-da-denial" class="file-list"></div>
         </div>
-        <div class="fg" style="margin:0;">
-          <label>Construction Plans <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
-          <div class="upload-zone" id="zone-da-plans" style="padding:1.25rem;" ondragover="dragOver(event,'zone-da-plans')" ondragleave="dragLeave('zone-da-plans')" ondrop="dropDAFile(event,'da-plans')" onclick="document.getElementById('file-da-plans').click()">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:6px;">Construction Plans <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
+          <div class="upload-zone" id="zone-da-plans" style="padding:1rem;min-height:90px;" ondragover="dragOver(event,'zone-da-plans')" ondragleave="dragLeave('zone-da-plans')" ondrop="dropDAFile(event,'da-plans')" onclick="document.getElementById('file-da-plans').click()">
             <input type="file" id="file-da-plans" accept=".pdf,.png,.jpg,.jpeg" multiple style="display:none;" onchange="handleDAFile(this,'da-plans')">
-            <div class="upload-icon" style="font-size:24px;margin-bottom:4px;">📐</div>
-            <div class="upload-title" style="font-size:13px;">Drop construction plans here</div>
-            <div class="upload-sub">PDF, PNG, or JPG · Multiple files</div>
+            <div style="font-size:22px;margin-bottom:4px;">📐</div>
+            <div class="upload-title" style="font-size:12px;">Drop plans here</div>
+            <div class="upload-sub" style="font-size:11px;">PDF, PNG, JPG · Multiple OK</div>
           </div>
           <div id="list-da-plans" class="file-list"></div>
         </div>
