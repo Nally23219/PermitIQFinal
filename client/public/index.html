@@ -379,6 +379,20 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <label>Additional project details (optional)</label>
         <textarea id="np-details" placeholder="Describe your project: dimensions, materials, location on property, any known zoning info, estimated cost…" style="min-height:80px;"></textarea>
       </div>
+      <!-- Plan Upload Section -->
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:600;color:var(--t2);letter-spacing:0.3px;text-transform:uppercase;display:block;margin-bottom:6px;">
+          Upload Plans / Drawings <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional — helps AI give more specific advice</span>
+        </label>
+        <div class="upload-zone" id="zone-np-plans" style="padding:1.25rem;" ondragover="dragOver(event,'zone-np-plans')" ondragleave="dragLeave('zone-np-plans')" ondrop="dropNPFile(event)">
+          <input type="file" id="file-np-plans" accept=".pdf,.png,.jpg,.jpeg" multiple onchange="handleNPFile(this)">
+          <div class="upload-icon" style="font-size:24px;margin-bottom:6px;">📐</div>
+          <div class="upload-title" style="font-size:13px;">Drop site plans, drawings, or surveys here</div>
+          <div class="upload-sub">PDF, PNG, or JPG · Multiple files supported</div>
+        </div>
+        <div id="list-np-plans" class="file-list"></div>
+      </div>
+
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <button class="btn btn-p" id="np-btn" onclick="runNewPermit()">🏗️ Analyze My Project</button>
         <button class="btn btn-o btn-sm" onclick="clearNewPermit()">Clear</button>
@@ -765,6 +779,9 @@ function clearNewPermit(){
   document.getElementById('np-historic').value='';
   document.getElementById('np-details').value='';
   document.getElementById('np-result').innerHTML='';
+  uploadedFiles.npplans=[];
+  document.getElementById('list-np-plans').innerHTML='';
+  document.getElementById('file-np-plans').value='';
 }
 async function runNewPermit(){
   const scope=document.getElementById('np-scope').value;
@@ -776,7 +793,24 @@ async function runNewPermit(){
   const btn=document.getElementById('np-btn');
   btn.disabled=true;btn.textContent='Analyzing…';
   document.getElementById('np-result').innerHTML=loadingHtml('Analyzing your project…','Checking permit requirements, zoning risk, and timeline');
-  const msg=`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nDetermine permit requirements, ZBA risk, required documents, and next steps.`;
+  // Build message content — include uploaded plans if present
+  let npContent;
+  if(uploadedFiles.npplans.length>0){
+    npContent=[];
+    for(const f of uploadedFiles.npplans){
+      const b64=await fileToBase64(f);
+      const mtype=f.type||'image/jpeg';
+      if(mtype.includes('pdf')){
+        npContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}});
+      } else {
+        npContent.push({type:'image',source:{type:'base64',media_type:mtype,data:b64}});
+      }
+    }
+    npContent.push({type:'text',text:`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nThe uploaded file(s) are the applicant's site plans or drawings. Please review them along with the project details above. Determine permit requirements, ZBA risk, required documents, and next steps.`});
+  } else {
+    npContent=`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nDetermine permit requirements, ZBA risk, required documents, and next steps.`;
+  }
+  const msg = npContent;
   try{
     const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:NP_SYS,messages:[{role:'user',content:msg}]})});
     const d=await r.json();
@@ -790,7 +824,7 @@ async function runNewPermit(){
 }
 
 // ═══ FILE UPLOAD HANDLING ═══
-let uploadedFiles={denial:[], plans:[]};
+let uploadedFiles={denial:[], plans:[], npplans:[]};
 
 function dragOver(e,zoneId){e.preventDefault();document.getElementById(zoneId).classList.add('drag');}
 function dragLeave(zoneId){document.getElementById(zoneId).classList.remove('drag');}
@@ -810,6 +844,22 @@ function handleFileList(files,type){
   });
   renderFileList(type);
 }
+function dropNPFile(e){e.preventDefault();dragLeave('zone-np-plans');handleNPFileList(e.dataTransfer.files);}
+function handleNPFile(input){handleNPFileList(input.files);}
+function handleNPFileList(files){
+  Array.from(files).slice(0,5).forEach(f=>{
+    if(uploadedFiles.npplans.length<5) uploadedFiles.npplans.push(f);
+  });
+  const container=document.getElementById('list-np-plans');
+  container.innerHTML='';
+  uploadedFiles.npplans.forEach((f,i)=>{
+    const size=(f.size/1024).toFixed(0);
+    const icon=f.type.includes('pdf')?'📄':'🖼️';
+    container.innerHTML+=`<div class="file-item"><span class="file-icon">${icon}</span><span class="file-name">${f.name}</span><span class="file-size">${size} KB</span><span class="file-status fs-ok">Ready</span><button class="file-remove" onclick="removeNPFile(${i})" title="Remove">✕</button></div>`;
+  });
+}
+function removeNPFile(idx){uploadedFiles.npplans.splice(idx,1);handleNPFileList([]);}
+
 function renderFileList(type){
   const container=document.getElementById('list-'+type);
   container.innerHTML='';
