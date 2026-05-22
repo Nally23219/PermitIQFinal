@@ -1120,16 +1120,31 @@ async function downloadRedlinedPlans(source){
   const btn = document.getElementById(source+'-redline-btn');
   const origText = btn.innerHTML;
   btn.disabled=true;
-  btn.innerHTML='⏳ Generating redlined PDF…';
+  btn.innerHTML='Generating redlined PDF...';
 
   try{
     const formData = new FormData();
     formData.append('analysis', analysis);
-    files.forEach((f,i) => formData.append('plans', f, f.name));
+    // Pass context so Claude knows what to look for
+    if(source==='np'){
+      formData.append('scope', document.getElementById('np-scope')?.value||'');
+      formData.append('neighborhood', document.getElementById('np-hood')?.value||'');
+    } else {
+      formData.append('scope', document.getElementById('proj-type')?.value||'');
+      formData.append('neighborhood', document.getElementById('hood')?.value||'');
+    }
+    // Send actual plan files so Claude can see them
+    const planFiles = files.filter(f => !f.name.toLowerCase().includes('denial'));
+    if(planFiles.length===0){
+      // If no separate plan files, send all files
+      files.forEach(f => formData.append('plans', f, f.name));
+    } else {
+      planFiles.forEach(f => formData.append('plans', f, f.name));
+    }
 
     const r = await fetch('/api/redline', { method:'POST', body: formData });
     if(!r.ok){
-      const err = await r.json();
+      const err = await r.json().catch(()=>({error:'Server error'}));
       throw new Error(err.error || 'Server error');
     }
     const blob = await r.blob();
