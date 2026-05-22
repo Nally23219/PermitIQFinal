@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PermitIQ — Pre-Engineering Feasibility & Permit Risk Analysis</title>
-
+  <title>PermitIQ Boston — AI-Powered Permitting</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
@@ -14,13 +13,17 @@
     :root {
       --navy: #0a1628;
       --navy2: #0d1f3c;
+      --blue: #1a50b0;
       --bright: #1e6fff;
       --accent: #00c8ff;
       --gold: #f5b400;
       --white: #ffffff;
+      --offwhite: #f4f7ff;
       --muted: #6b8ab0;
       --border: rgba(100,160,255,0.12);
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -30,264 +33,184 @@
     }
 
     nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       padding: 18px 48px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(20px);
-      background: rgba(10,22,40,0.8);
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(24px);
+      background: rgba(10,22,40,0.75);
       border-bottom: 1px solid var(--border);
-      z-index: 100;
     }
 
-    .logo {
+    .nav-logo {
       font-family: 'Playfair Display', serif;
-      font-weight: 900;
-      font-size: 22px;
+      font-size: 22px; font-weight: 900;
+      letter-spacing: -0.5px;
     }
-    .logo span { color: var(--accent); }
+    .nav-logo span { color: var(--accent); }
 
-    .btn {
-      background: var(--bright);
-      color: white;
-      padding: 10px 18px;
-      border-radius: 10px;
+    .nav-cta {
+      background: var(--bright); color: #fff;
+      border: none; border-radius: 10px;
+      padding: 10px 24px; font-size: 14px; font-weight: 600;
+      cursor: pointer;
       text-decoration: none;
-      font-weight: 600;
+      display: inline-block;
     }
 
     .hero {
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       text-align: center;
-      padding: 140px 20px 80px;
+      padding: 120px 24px 80px;
+      position: relative;
     }
 
-    h1 {
+    .hero-inner { max-width: 820px; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(30,111,255,0.12);
+      border: 1px solid rgba(30,111,255,0.25);
+      color: #7dd3fc;
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .hero h1 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(44px, 6vw, 78px);
+      font-size: clamp(44px, 7vw, 80px);
+      font-weight: 900;
       line-height: 1.05;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
-    h1 em {
+    .hero h1 em {
       font-style: normal;
       background: linear-gradient(135deg, var(--accent), var(--bright));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .sub {
-      max-width: 700px;
-      margin: 0 auto;
-      color: var(--muted);
+    .hero-sub {
       font-size: 18px;
+      color: var(--muted);
       line-height: 1.6;
+      max-width: 650px;
+      margin: 0 auto 40px;
     }
 
-    .cta-row {
-      margin-top: 32px;
+    .hero-actions {
       display: flex;
-      justify-content: center;
       gap: 12px;
+      justify-content: center;
       flex-wrap: wrap;
     }
 
-    .primary {
+    .btn-primary {
       background: var(--bright);
+      color: white;
       padding: 14px 28px;
       border-radius: 12px;
-      color: white;
       text-decoration: none;
       font-weight: 600;
     }
 
-    .secondary {
+    .btn-secondary {
       border: 1px solid var(--border);
+      color: white;
       padding: 14px 28px;
       border-radius: 12px;
-      color: white;
       text-decoration: none;
     }
 
-    .section {
-      padding: 100px 24px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .tag {
-      color: var(--accent);
-      font-size: 12px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 44px;
-      margin-bottom: 16px;
-    }
-
-    .muted {
-      color: var(--muted);
-      max-width: 650px;
-      line-height: 1.6;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
       margin-top: 50px;
+      flex-wrap: wrap;
     }
 
-    .card {
-      border: 1px solid var(--border);
-      padding: 26px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.03);
+    .stat-num {
+      font-size: 28px;
+      font-weight: 800;
     }
 
-    .card h3 {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .card p {
+    .stat-label {
+      font-size: 12px;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
+      text-transform: uppercase;
+      margin-top: 4px;
     }
 
-    .risk {
-      background: rgba(255,255,255,0.02);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .cta {
-      text-align: center;
-      padding: 120px 20px;
-    }
-
-    footer {
-      padding: 40px;
-      text-align: center;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
-    }
-
-    @media(max-width: 900px){
-      .grid { grid-template-columns: 1fr; }
-      nav { padding: 16px 20px; }
-    }
   </style>
 </head>
 
 <body>
 
 <nav>
-  <div class="logo">Permit<span>IQ</span></div>
-  <a class="btn" href="/index.html">Launch App</a>
+  <div class="nav-logo">Permit<span>IQ</span></div>
+  <a href="/index.html" class="nav-cta">Launch App</a>
 </nav>
 
 <section class="hero">
-  <div>
-    <h1>Before you hire an engineer,<br><em>validate your project.</em><br>Stop wasting money on unbuildable plans.</h1>
 
-    <p class="sub">
+  <div class="hero-inner">
+
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Built for Boston · Pre-Engineering Feasibility
+    </div>
+
+    <h1>
+      Before you hire an engineer,<br>
+      <em>validate your project.</em><br>
+      Stop wasting money on unbuildable plans.
+    </h1>
+
+    <p class="hero-sub">
       PermitIQ analyzes zoning, ISD requirements, and building code to identify approval risks before you spend thousands on engineering, design, or redesigns.
     </p>
 
-    <div class="cta-row">
-      <a class="primary" href="/index.html">Run Feasibility Scan →</a>
-      <a class="secondary" href="#features">See How It Works</a>
+    <div class="hero-actions">
+      <a href="/index.html" class="btn-primary">Run Feasibility Scan →</a>
+      <a href="#features" class="btn-secondary">See How It Works</a>
     </div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">$10K+</div>
+        <div class="stat-label">Saved on Avoided Redesigns</div>
+      </div>
+
+      <div>
+        <div class="stat-num">PRE</div>
+        <div class="stat-label">Engineering Validation First</div>
+      </div>
+
+      <div>
+        <div class="stat-num">FAST</div>
+        <div class="stat-label">Feasibility in Minutes</div>
+      </div>
+
+      <div>
+        <div class="stat-num">RISK</div>
+        <div class="stat-label">Approval Risk Scoring</div>
+      </div>
+    </div>
+
   </div>
+
 </section>
-
-<section class="section">
-  <div class="tag">Why PermitIQ Exists</div>
-  <h2>Most projects fail before construction ever starts.</h2>
-  <p class="muted">
-    Not because of engineering mistakes — but because zoning and permitting constraints were discovered too late.
-  </p>
-
-  <div class="grid">
-    <div class="card">
-      <h3>$10K–$50K wasted on redesigns</h3>
-      <p>Plans get rejected after engineering work is already complete.</p>
-    </div>
-    <div class="card">
-      <h3>Months of avoidable delays</h3>
-      <p>Zoning issues are found too late in the approval process.</p>
-    </div>
-    <div class="card">
-      <h3>Unnecessary consultant cycles</h3>
-      <p>Engineers are hired before feasibility is confirmed.</p>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="features">
-  <div class="tag">What You Get</div>
-  <h2>Pre-engineering clarity in minutes.</h2>
-  <p class="muted">Find approval risks before you commit to full design costs.</p>
-
-  <div class="grid">
-    <div class="card">
-      <h3>Project Feasibility Scan</h3>
-      <p>Instant zoning + permit risk analysis before engineering begins.</p>
-    </div>
-    <div class="card">
-      <h3>Rejection Breakdown</h3>
-      <p>Understand denial letters and what actually needs to change.</p>
-    </div>
-    <div class="card">
-      <h3>Plan Risk Review</h3>
-      <p>Identify dimensional, zoning, and code issues early.</p>
-    </div>
-  </div>
-</section>
-
-<section class="section risk">
-  <div class="tag">How It Works</div>
-  <h2>From upload to clarity in minutes.</h2>
-
-  <div class="grid">
-    <div class="card">
-      <h3>1. Upload Project</h3>
-      <p>Plans, sketches, or project description.</p>
-    </div>
-    <div class="card">
-      <h3>2. AI Analysis</h3>
-      <p>Cross-checks zoning, ISD, and building code.</p>
-    </div>
-    <div class="card">
-      <h3>3. Get Results</h3>
-      <p>Approval risks + next steps in plain English.</p>
-    </div>
-  </div>
-</section>
-
-<section class="cta">
-  <h2>Ready to validate your project?</h2>
-  <p class="muted">Don’t find out after you’ve already spent the money.</p>
-  <div class="cta-row">
-    <a class="primary" href="/index.html">Run Feasibility Scan →</a>
-  </div>
-</section>
-
-<footer>
-  PermitIQ · Pre-Engineering Feasibility & Permit Risk Analysis
-</footer>
 
 </body>
 </html>
