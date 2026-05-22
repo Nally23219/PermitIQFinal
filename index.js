@@ -19,11 +19,13 @@ import caseLookupRoute from "./routes/caselookup.js";
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC = path.join(__dirname, "client/public");
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "25mb" }));
 
+// API routes
 app.use("/upload", uploadRoute);
 app.use("/claude", claudeRoute);
 app.use("/chat", chatRoute);
@@ -36,9 +38,22 @@ app.use("/api/dashboard", dashboardRoute);
 app.use("/api/zoning", zoningRoute);
 app.use("/api/case", caseLookupRoute);
 
-app.use(express.static(path.join(__dirname, "client/public")));
+// Static files
+app.use(express.static(PUBLIC));
+
+// Landing page at root
+app.get("/", (req, res) => {
+  res.sendFile(path.join(PUBLIC, "landing.html"));
+});
+
+// App at /app
+app.get("/app", (req, res) => {
+  res.sendFile(path.join(PUBLIC, "index.html"));
+});
+
+// Fallback
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/public/index.html"));
+  res.sendFile(path.join(PUBLIC, "index.html"));
 });
 
 const PORT = process.env.PORT || 10000;
