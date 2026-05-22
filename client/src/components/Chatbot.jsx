@@ -3,131 +3,16 @@ import axios from "axios";
 
 const BASE = "https://permitiqfinal.onrender.com";
 
-const styles = {
-  bubble: {
-    position: "fixed",
-    bottom: "24px",
-    right: "24px",
-    width: "56px",
-    height: "56px",
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, #1a73e8, #0d47a1)",
-    color: "#fff",
-    fontSize: "26px",
-    border: "none",
-    cursor: "pointer",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-    transition: "transform 0.2s",
-  },
-  window: {
-    position: "fixed",
-    bottom: "90px",
-    right: "24px",
-    width: "340px",
-    height: "480px",
-    background: "#fff",
-    borderRadius: "16px",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-    display: "flex",
-    flexDirection: "column",
-    zIndex: 1000,
-    overflow: "hidden",
-    fontFamily: "sans-serif",
-  },
-  header: {
-    background: "linear-gradient(135deg, #1a73e8, #0d47a1)",
-    color: "#fff",
-    padding: "14px 16px",
-    fontWeight: "bold",
-    fontSize: "15px",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  messages: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "12px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-    background: "#f7f9fc",
-  },
-  msgUser: {
-    alignSelf: "flex-end",
-    background: "#1a73e8",
-    color: "#fff",
-    padding: "8px 12px",
-    borderRadius: "12px 12px 2px 12px",
-    maxWidth: "80%",
-    fontSize: "14px",
-    lineHeight: "1.4",
-  },
-  msgBot: {
-    alignSelf: "flex-start",
-    background: "#fff",
-    color: "#333",
-    padding: "8px 12px",
-    borderRadius: "12px 12px 12px 2px",
-    maxWidth: "80%",
-    fontSize: "14px",
-    lineHeight: "1.4",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
-    whiteSpace: "pre-wrap",
-  },
-  inputRow: {
-    display: "flex",
-    padding: "10px",
-    gap: "8px",
-    borderTop: "1px solid #e8eaed",
-    background: "#fff",
-  },
-  input: {
-    flex: 1,
-    border: "1px solid #ddd",
-    borderRadius: "20px",
-    padding: "8px 14px",
-    fontSize: "14px",
-    outline: "none",
-  },
-  sendBtn: {
-    background: "#1a73e8",
-    color: "#fff",
-    border: "none",
-    borderRadius: "50%",
-    width: "36px",
-    height: "36px",
-    cursor: "pointer",
-    fontSize: "16px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  typing: {
-    alignSelf: "flex-start",
-    background: "#fff",
-    color: "#999",
-    padding: "8px 12px",
-    borderRadius: "12px 12px 12px 2px",
-    fontSize: "13px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
-  },
-};
-
-const SYSTEM = `You are PermitIQ Assistant, a helpful expert on permits and licensing. 
-You answer questions about construction & building permits, business licenses, zoning, 
-and general permitting processes clearly and concisely. 
+const SYSTEM = `You are PermitIQ Assistant, a helpful expert on permits and licensing.
+You answer questions about construction & building permits, business licenses, zoning,
+and general permitting processes clearly and concisely.
 If a question is outside permitting topics, politely redirect the user back to permit-related questions.
 Keep answers brief and practical — under 150 words unless more detail is truly needed.`;
 
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "bot", text: "Hi! I'm the PermitIQ assistant. Ask me anything about building permits, business licenses, or zoning — I'm here to help! 🏗️" }
+    { role: "bot", text: "Hi! I'm your PermitIQ assistant. Ask me anything about building permits, business licenses, or zoning. 🏗️" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -152,37 +37,51 @@ export default function Chatbot() {
     setLoading(false);
   };
 
-  const onKey = (e) => { if (e.key === "Enter") send(); };
-
   return (
     <>
       {open && (
-        <div style={styles.window}>
-          <div style={styles.header}>
-            <span>🏗️</span> PermitIQ Assistant
-            <button onClick={() => setOpen(false)} style={{ marginLeft: "auto", background: "none", border: "none", color: "#fff", fontSize: "18px", cursor: "pointer" }}>×</button>
+        <div className="chat-window">
+          <div className="chat-header">
+            <div className="chat-header-info">
+              <span className="chat-avatar">⬡</span>
+              <div>
+                <div className="chat-title">PermitIQ Assistant</div>
+                <div className="chat-status"><span className="status-dot" />Online</div>
+              </div>
+            </div>
+            <button className="chat-close" onClick={() => setOpen(false)}>×</button>
           </div>
-          <div style={styles.messages}>
+          <div className="chat-messages">
             {messages.map((m, i) => (
-              <div key={i} style={m.role === "user" ? styles.msgUser : styles.msgBot}>{m.text}</div>
+              <div key={i} className={`msg ${m.role === "user" ? "msg-user" : "msg-bot"}`}>
+                {m.text}
+              </div>
             ))}
-            {loading && <div style={styles.typing}>Typing…</div>}
+            {loading && (
+              <div className="msg msg-bot typing">
+                <span /><span /><span />
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
-          <div style={styles.inputRow}>
+          <div className="chat-input-row">
             <input
-              style={styles.input}
+              className="chat-input"
               value={input}
               onChange={e => setInput(e.target.value)}
-              onKeyDown={onKey}
+              onKeyDown={e => e.key === "Enter" && send()}
               placeholder="Ask a permit question…"
             />
-            <button style={styles.sendBtn} onClick={send}>➤</button>
+            <button className="chat-send" onClick={send}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
           </div>
         </div>
       )}
-      <button style={styles.bubble} onClick={() => setOpen(o => !o)}>
-        {open ? "×" : "💬"}
+      <button className={`chat-bubble ${open ? "open" : ""}`} onClick={() => setOpen(o => !o)}>
+        {open ? "×" : (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        )}
       </button>
     </>
   );
