@@ -16,5 +16,6 @@ export async function askClaude(prompt) {
       }
     }
   );
+
   return res.data.content[0].text;
 }

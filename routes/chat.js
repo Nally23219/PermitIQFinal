@@ -11,15 +11,24 @@ Keep answers brief and practical — under 150 words unless more detail is truly
 
 router.post("/", async (req, res) => {
   const { message, history = [] } = req.body;
+
+  // Build message history for context (last 10 messages)
   const prior = history.slice(-10).map(m => ({
     role: m.role === "user" ? "user" : "assistant",
     content: m.text
   }));
+
   const messages = [...prior, { role: "user", content: message }];
+
   try {
     const response = await axios.post(
       "https://api.anthropic.com/v1/messages",
-      { model: "claude-sonnet-4-6", max_tokens: 400, system: SYSTEM, messages },
+      {
+        model: "claude-sonnet-4-6",
+        max_tokens: 400,
+        system: SYSTEM,
+        messages
+      },
       {
         headers: {
           "x-api-key": process.env.ANTHROPIC_API_KEY,
@@ -28,8 +37,9 @@ router.post("/", async (req, res) => {
         }
       }
     );
+
     res.json({ reply: response.data.content[0].text });
-  } catch {
+  } catch (err) {
     res.status(500).json({ reply: "Sorry, I couldn't get a response right now." });
   }
 });
