@@ -43,7 +43,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bc);color:var(--t1);min-h
 /* MAIN */
 .main{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem;}
 /* TABS - 5 columns */
-.mtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:2rem;}
+.mtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:2rem;}
 .mtab{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1rem 0.75rem;cursor:pointer;transition:all 0.18s;text-align:left;display:flex;flex-direction:column;gap:5px;}
 .mtab:hover{border-color:var(--bb);box-shadow:var(--sh);transform:translateY(-1px);}
 .mtab.active{background:var(--bb);border-color:var(--bb);box-shadow:var(--shl);}
@@ -273,11 +273,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
       <div class="mtab-lbl">New Permit Advisor</div>
       <div class="mtab-sub">Do you even need one?</div>
     </button>
-    <button class="mtab" onclick="switchTab('upload',this)" role="tab">
-      <div class="mtab-icon">📎</div>
-      <div class="mtab-lbl">Upload Documents</div>
-      <div class="mtab-sub">Plans + denial letter → instant plan</div>
-    </button>
+
     <button class="mtab" onclick="switchTab('analyze',this)" role="tab">
       <div class="mtab-icon">🔍</div>
       <div class="mtab-lbl">Denial Analyzer</div>
@@ -423,83 +419,6 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
     </div>
   </div>
 
-  <!-- ══════════ UPLOAD PANEL ══════════ -->
-  <div id="panel-upload" class="panel">
-    <div class="card">
-      <div class="card-hd">
-        <div><div class="card-title">Upload Documents for Instant Analysis</div><div class="card-sub">Attach your ISD denial letter and/or architectural plans — the AI reads them and generates your action plan automatically</div></div>
-        <span class="cbadge cb-blue">AI Document Read</span>
-      </div>
-
-      <div class="callout co-blue"><div class="co-icon">📎</div><div>Upload your <strong>ISD refusal/denial letter</strong> (PDF or image) and optionally your <strong>site plans or drawings</strong>. The AI will extract the violations, cross-reference the Boston Zoning Code, and generate a complete action plan — no manual copying required.</div></div>
-
-      <!-- Upload zone: denial letter -->
-      <div class="fg">
-        <label>ISD Denial / Refusal Letter <span style="color:var(--er);font-weight:700;">*</span></label>
-        <div class="upload-zone" id="zone-denial" ondragover="dragOver(event,'zone-denial')" ondragleave="dragLeave('zone-denial')" ondrop="dropFile(event,'denial')" onclick="document.getElementById('file-denial').click()">
-          <input type="file" id="file-denial" accept=".pdf,.png,.jpg,.jpeg" onchange="handleFile(this,'denial')">
-          <div class="upload-icon">📄</div>
-          <div class="upload-title">Drop your denial letter here</div>
-          <div class="upload-sub">PDF, PNG, or JPG · Click or drag to upload</div>
-        </div>
-        <div id="list-denial" class="file-list"></div>
-      </div>
-
-      <!-- Upload zone: plans -->
-      <div class="fg">
-        <label>Architectural Plans / Site Drawings <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional but recommended</span></label>
-        <div class="upload-zone" id="zone-plans" ondragover="dragOver(event,'zone-plans')" ondragleave="dragLeave('zone-plans')" ondrop="dropFile(event,'plans')" onclick="document.getElementById('file-plans').click()">
-          <input type="file" id="file-plans" accept=".pdf,.png,.jpg,.jpeg" multiple onchange="handleFile(this,'plans')">
-          <div class="upload-icon">📐</div>
-          <div class="upload-title">Drop your plans here</div>
-          <div class="upload-sub">PDF, PNG, or JPG · Multiple files supported</div>
-        </div>
-        <div id="list-plans" class="file-list"></div>
-      </div>
-
-      <div class="frow">
-        <div class="fg" style="margin:0">
-          <label>Project Type (helps AI focus)</label>
-          <select id="up-projtype">
-            <option value="">Optional — select if known…</option>
-            <option>Residential addition / expansion</option>
-            <option>New residential construction</option>
-            <option>Accessory dwelling unit (ADU)</option>
-            <option>Deck, porch, or shed</option>
-            <option>Dormer or roof alteration</option>
-            <option>Commercial renovation</option>
-            <option>Change of use</option>
-            <option>Mixed-use development</option>
-            <option>Interior renovation (structural)</option>
-          </select>
-        </div>
-        <div class="fg" style="margin:0">
-          <label>Neighborhood</label>
-          <select id="up-hood">
-            <option value="">Optional…</option>
-            <optgroup label="Boston">
-              <option>Back Bay</option><option>South End</option><option>Charlestown</option>
-              <option>Dorchester</option><option>East Boston</option><option>Hyde Park</option>
-              <option>Jamaica Plain</option><option>Mattapan</option><option>Roslindale</option>
-              <option>Roxbury</option><option>South Boston</option><option>West Roxbury</option>
-            </optgroup>
-            <optgroup label="Greater Boston">
-              <option>Cambridge</option><option>Somerville</option><option>Brookline</option><option>Quincy</option>
-            </optgroup>
-          </select>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <button class="btn btn-g" id="upload-btn" onclick="runUploadAnalysis()">📎 Analyze Uploaded Documents</button>
-        <button class="btn btn-o btn-sm" onclick="clearUploads()">Clear all</button>
-      </div>
-      <div style="margin-top:0.75rem;">
-        <a id="download-report" class="dl-btn" style="display:none;" href="#" onclick="downloadReport(event)">⬇ Download Action Plan (PDF)</a>
-      </div>
-      <div id="upload-result"></div>
-    </div>
-  </div>
 
   <!-- ══════════ ANALYZE PANEL ══════════ -->
   <div id="panel-analyze" class="panel">
@@ -513,9 +432,34 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <div><div class="card-title">Permit Denial Analyzer</div><div class="card-sub">Cross-references Boston Zoning Code, ISD requirements, and 780 CMR</div></div>
         <span class="cbadge cb-blue">AI Analysis</span>
       </div>
-      <div class="callout co-blue"><div class="co-icon">ℹ️</div><div>Paste your ISD refusal letter text below. The AI will classify your violation, determine if it can be cured without a ZBA appeal, and generate a step-by-step action plan with draft appeal language.</div></div>
+      <div class="callout co-blue"><div class="co-icon">ℹ️</div><div>Upload your ISD denial letter and/or construction plans, or paste the denial text below. The AI will classify your violation, determine if it can be cured without ZBA, and generate a step-by-step action plan.</div></div>
+
+      <!-- Upload zones -->
+      <div class="frow" style="margin-bottom:14px;">
+        <div class="fg" style="margin:0;">
+          <label>ISD Denial / Refusal Letter <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional — upload or paste below</span></label>
+          <div class="upload-zone" id="zone-da-denial" style="padding:1.25rem;" ondragover="dragOver(event,'zone-da-denial')" ondragleave="dragLeave('zone-da-denial')" ondrop="dropDAFile(event,'da-denial')" onclick="document.getElementById('file-da-denial').click()">
+            <input type="file" id="file-da-denial" accept=".pdf,.png,.jpg,.jpeg" style="display:none;" onchange="handleDAFile(this,'da-denial')">
+            <div class="upload-icon" style="font-size:24px;margin-bottom:4px;">📄</div>
+            <div class="upload-title" style="font-size:13px;">Drop denial letter here</div>
+            <div class="upload-sub">PDF, PNG, or JPG</div>
+          </div>
+          <div id="list-da-denial" class="file-list"></div>
+        </div>
+        <div class="fg" style="margin:0;">
+          <label>Construction Plans <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional</span></label>
+          <div class="upload-zone" id="zone-da-plans" style="padding:1.25rem;" ondragover="dragOver(event,'zone-da-plans')" ondragleave="dragLeave('zone-da-plans')" ondrop="dropDAFile(event,'da-plans')" onclick="document.getElementById('file-da-plans').click()">
+            <input type="file" id="file-da-plans" accept=".pdf,.png,.jpg,.jpeg" multiple style="display:none;" onchange="handleDAFile(this,'da-plans')">
+            <div class="upload-icon" style="font-size:24px;margin-bottom:4px;">📐</div>
+            <div class="upload-title" style="font-size:13px;">Drop construction plans here</div>
+            <div class="upload-sub">PDF, PNG, or JPG · Multiple files</div>
+          </div>
+          <div id="list-da-plans" class="file-list"></div>
+        </div>
+      </div>
+
       <div class="fg">
-        <label>Denial / Refusal Letter Text</label>
+        <label>Denial / Refusal Letter Text <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">paste here if not uploading above</span></label>
         <textarea id="denial-in" placeholder="e.g. 'Denied — proposed addition exceeds maximum FAR of 2.0 for a 3F-2000 district. Proposed FAR is 2.4. Side yard setback: required 5ft, proposed 3ft.'"></textarea>
       </div>
       <div class="frow">
@@ -600,10 +544,11 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Overlay district requirements addressed <span class="ctag t-common">Common denial</span></div><div class="cl-desc">Design Overlay = BPDA design review. Landmark district = Landmarks Commission review. Historic districts add further review layers.</div></div></li>
         <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Separate permits identified (electrical, plumbing, gas) <span class="ctag t-req">Required</span></div><div class="cl-desc">These are issued separately alongside the building permit. Identify all at the start to prevent inspection delays.</div></div></li>
       </ul>
-      <div style="display:flex;gap:10px;margin-top:1rem;align-items:center;">
+      <div style="display:flex;gap:10px;margin-top:1rem;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-p btn-sm" onclick="runChecklistSuggestions()">✨ Get AI Suggestions to Improve Odds</button>
         <button class="btn btn-o btn-sm" onclick="resetChecklist()">Reset all</button>
-        <span style="font-size:12px;color:var(--t3);">Check items as you prepare your submission package</span>
       </div>
+      <div id="checklist-suggestions"></div>
     </div>
   </div>
 
@@ -624,6 +569,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <div class="tls"><div class="tl-left"><div class="tl-num">6</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">ZBA decision &amp; finalization</div><div class="tl-body">Meet every condition before ISD issues the final permit. "Dismissed without prejudice" lets you refile sooner than the 1-year wait. Track your case at boston.gov ZBA decisions page.</div></div></div>
       </div>
       <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-p btn-sm" onclick="followUp('Give me 5 specific strategies to improve my ZBA approval odds at a Boston hearing, including neighbor outreach, presentation tips, and documentation.')">✨ Get AI Hearing Strategies</button>
         <a class="btn btn-o btn-sm" href="https://www.boston.gov/departments/inspectional-services/how-file-appeal-zoning-board" target="_blank">Official ZBA Filing ↗</a>
         <a class="btn btn-o btn-sm" href="https://permitsonline.boston.gov" target="_blank">Boston Permits Online ↗</a>
         <a class="btn btn-o btn-sm" href="https://bostonplans.org" target="_blank">BPDA Zoning Viewer ↗</a>
@@ -712,7 +658,10 @@ A short paragraph the applicant can use verbatim in their ZBA filing.
 ## Documents to Gather
 A bulleted list of required documents specific to this denial.
 
-Be practical and specific. Cite Boston Zoning Code articles. Flag when an attorney or architect is strongly recommended.`;
+Be practical and specific. Cite Boston Zoning Code articles. Flag when an attorney or architect is strongly recommended.
+
+## Suggestions to Improve Approval Odds
+Provide 3-5 specific, actionable suggestions the applicant can implement RIGHT NOW to improve their chances. Focus on things that actually move the needle: design tweaks, documentation, neighbor outreach, timing, who to bring to the hearing, etc. Be concrete — not generic advice.`;
 
 const NP_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code, ISD procedures, and 780 CMR.
 
@@ -741,6 +690,9 @@ Numbered list of exactly what to do first, including verifying zoning on bostonp
 
 **WATCH OUT FOR**
 Top 2-3 things that could derail this specific project type in Boston.
+
+**SUGGESTIONS TO IMPROVE APPROVAL ODDS**
+3-5 specific actions the applicant can take right now to maximize their chances of approval. Be concrete and Boston-specific.
 
 Be specific, cite Boston Zoning Code articles where relevant. Format your response cleanly using **bold** for headers and numbered lists for steps. Avoid raw markdown symbols appearing as text.`;
 
@@ -855,7 +807,7 @@ async function runNewPermit(){
 }
 
 // ═══ FILE UPLOAD HANDLING ═══
-let uploadedFiles={denial:[], plans:[], npplans:[]};
+let uploadedFiles={denial:[], plans:[], npplans:[], 'da-denial':[], 'da-plans':[]};
 
 function dragOver(e,zoneId){e.preventDefault();document.getElementById(zoneId).classList.add('drag');}
 function dragLeave(zoneId){document.getElementById(zoneId).classList.remove('drag');}
@@ -903,6 +855,32 @@ function renderFileList(type){
 function removeFile(type,idx){
   uploadedFiles[type].splice(idx,1);
   renderFileList(type);
+}
+
+// Denial Analyzer uploads
+function dropDAFile(e,type){e.preventDefault();dragLeave('zone-'+type.replace('-','_'));handleDAFileList(e.dataTransfer.files,type);}
+function handleDAFile(input,type){handleDAFileList(input.files,type);}
+function handleDAFileList(files,type){
+  const max=type==='da-denial'?1:5;
+  if(!uploadedFiles[type]) uploadedFiles[type]=[];
+  Array.from(files).slice(0,max).forEach(f=>{
+    if(uploadedFiles[type].length<max) uploadedFiles[type].push(f);
+  });
+  renderDAFileList(type);
+}
+function renderDAFileList(type){
+  const container=document.getElementById('list-'+type);
+  if(!container) return;
+  container.innerHTML='';
+  (uploadedFiles[type]||[]).forEach((f,i)=>{
+    const size=(f.size/1024).toFixed(0);
+    const icon=f.type.includes('pdf')?'📄':'🖼️';
+    container.innerHTML+=`<div class="file-item"><span class="file-icon">${icon}</span><span class="file-name">${f.name}</span><span class="file-size">${size} KB</span><span class="file-status fs-ok">Ready</span><button class="file-remove" onclick="removeDAFile('${type}',${i})">✕</button></div>`;
+  });
+}
+function removeDAFile(type,idx){
+  uploadedFiles[type].splice(idx,1);
+  renderDAFileList(type);
 }
 function clearUploads(){
   uploadedFiles={denial:[],plans:[]};
@@ -1002,7 +980,11 @@ function clearForm(){
 }
 async function runAnalysis(){
   const denial=document.getElementById('denial-in').value.trim();
-  if(!denial){document.getElementById('result-area').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Please paste your denial text before analyzing.</div></div>';return;}
+  const hasUploads=(uploadedFiles['da-denial']||[]).length>0;
+  if(!denial && !hasUploads){
+    document.getElementById('result-area').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Please upload a denial letter or paste the denial text before analyzing.</div></div>';
+    return;
+  }
   const projType=document.getElementById('proj-type').value||'Not specified';
   const hood=document.getElementById('hood').value||'Not specified';
   const violations=Array.from(document.querySelectorAll('.vchip.sel')).map(c=>c.dataset.v).join(', ')||'Not specified';
@@ -1010,9 +992,28 @@ async function runAnalysis(){
   const btn=document.getElementById('analyze-btn');
   btn.disabled=true;btn.textContent='Analyzing…';
   document.getElementById('result-area').innerHTML=loadingHtml('Analyzing your denial…','Cross-referencing Boston Zoning Code, ISD requirements, and 780 CMR');
-  const msg=`Denial/refusal text: ${denial}\nProject type: ${projType}\nNeighborhood: ${hood}\nViolation types: ${violations}\nAdditional context: ${ctx}\n\nProvide a complete actionable analysis and action plan.`;
+
+  // Build content — include uploads if present
+  let msgContent;
+  const daFiles=[...(uploadedFiles['da-denial']||[]),...(uploadedFiles['da-plans']||[])];
+  if(daFiles.length>0){
+    msgContent=[];
+    for(const f of daFiles){
+      const b64=await fileToBase64(f);
+      const mtype=f.type||'image/jpeg';
+      if(mtype.includes('pdf')){
+        msgContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}});
+      } else {
+        msgContent.push({type:'image',source:{type:'base64',media_type:mtype,data:b64}});
+      }
+    }
+    msgContent.push({type:'text',text:`Denial text (if any): ${denial||'See uploaded document'}\nProject type: ${projType}\nNeighborhood: ${hood}\nViolation types selected: ${violations}\nAdditional context: ${ctx}\n\nAnalyze all uploaded documents and provide a complete actionable analysis and action plan.`});
+  } else {
+    msgContent=`Denial/refusal text: ${denial}\nProject type: ${projType}\nNeighborhood: ${hood}\nViolation types: ${violations}\nAdditional context: ${ctx}\n\nProvide a complete actionable analysis and action plan.`;
+  }
+
   try{
-    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:DENY_SYS,messages:[{role:'user',content:msg}]})});
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:DENY_SYS,messages:[{role:'user',content:msgContent}]})});
     const d=await r.json();
     const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
     sessionCount++;
@@ -1039,6 +1040,23 @@ function resetChecklist(){
   document.getElementById('prog-lbl').textContent='0 of 12 complete';
   document.getElementById('prog-fill').style.width='0%';
 }
+async function runChecklistSuggestions(){
+  const done=document.querySelectorAll('.chk.checked').length;
+  const tot=document.querySelectorAll('.chk').length;
+  const unchecked=Array.from(document.querySelectorAll('.cli')).filter(li=>!li.querySelector('.chk.checked')).map(li=>li.querySelector('.cl-lbl').textContent.trim());
+  const el=document.getElementById('checklist-suggestions');
+  el.innerHTML=loadingHtml('Getting AI suggestions…','Analyzing your checklist progress');
+  const msg=`The applicant has completed ${done} of ${tot} pre-submission checklist items for a Boston ISD permit application. The following items are NOT yet checked: ${unchecked.join('; ')}. Based on this, provide 3-5 specific, prioritized suggestions to maximize approval odds. Focus on the unchecked items that matter most and any Boston-specific tips.`;
+  try{
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:'You are PermitIQ, a Boston permit expert. Give practical, specific suggestions to improve permit approval odds. Be concise and actionable. Use ## for section headers and bullet points for suggestions.',messages:[{role:'user',content:msg}]})});
+    const d=await r.json();
+    const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
+    el.innerHTML=`<div class="rwrap" style="margin-top:1rem;"><div class="rhd"><div class="rhd-title">✨ AI Suggestions to Improve Your Odds</div></div><div class="rbody">${fmt(raw)}</div></div>`;
+  }catch(e){
+    el.innerHTML=`<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Error: ${e.message}</div></div>`;
+  }
+}
+
 function followUp(t){
   // Open chatbot and send the follow-up question
   if(!chatOpen) toggleChat();
@@ -1062,6 +1080,18 @@ function toggleChat(){
   if(chatOpen)document.getElementById('chat-input').focus();
 }
 
+function fmtChat(raw){
+  if(!raw) return '';
+  return raw
+    .replace(/^#{1,3}\s+(.+)$/gm,'<strong>$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^[-•*]\s(.+)$/gm,'• $1')
+    .replace(/^(\d+)\.\s(.+)$/gm,'$1. $2')
+    .replace(/^---+$/gm,'')
+    .replace(/\n\n/g,'<br><br>')
+    .replace(/\n/g,'<br>');
+}
 async function sendChat(){
   const input=document.getElementById('chat-input');
   const text=input.value.trim();
@@ -1075,10 +1105,10 @@ async function sendChat(){
   try{
     const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:CHAT_SYS,messages:chatHistory.slice(-10)})});
     const d=await r.json();
-    const reply=d.content?.map(b=>b.text||'').join('')||'Sorry, I had trouble connecting.';
-    chatHistory.push({role:'assistant',content:reply});
+    const rawReply=d.content?.map(b=>b.text||'').join('')||'Sorry, I had trouble connecting.';
+    chatHistory.push({role:'assistant',content:rawReply});
     document.getElementById('typing')?.remove();
-    msgs.innerHTML+=`<div class="cmsg cmsg-bot">${reply}</div>`;
+    msgs.innerHTML+=`<div class="cmsg cmsg-bot">${fmtChat(rawReply)}</div>`;
   }catch(e){
     document.getElementById('typing')?.remove();
     msgs.innerHTML+='<div class="cmsg cmsg-bot">Sorry, connection error. Please try again.</div>';
