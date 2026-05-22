@@ -647,6 +647,36 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
   </div>
 </footer>
 
+
+<!-- CHATBOT -->
+<div id="chat-win" style="display:none;">
+  <div class="chat-window">
+    <div class="chat-hd">
+      <div class="chat-hd-info">
+        <div class="chat-avatar">B</div>
+        <div>
+          <div class="chat-name">PermitIQ Assistant</div>
+          <div class="chat-online"><span class="chat-dot"></span>Online</div>
+        </div>
+      </div>
+      <button class="chat-x" onclick="toggleChat()">×</button>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="cmsg cmsg-bot">Hi! I'm your PermitIQ assistant. Ask me anything about building permits, business licenses, zoning, or the ZBA process in Boston. 🏗️</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="Ask a permit question…" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+<button class="chat-bubble" id="chat-bubble" onclick="toggleChat()" title="Ask a permit question">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+
+
 <script>
 // ═══ TAB SWITCHING ═══
 function switchTab(name,btn){
@@ -1055,32 +1085,5 @@ async function sendChat(){
 }
 </script>
 
-<!-- CHATBOT -->
-<div id="chat-win" style="display:none;">
-  <div class="chat-window">
-    <div class="chat-hd">
-      <div class="chat-hd-info">
-        <div class="chat-avatar">B</div>
-        <div>
-          <div class="chat-name">PermitIQ Assistant</div>
-          <div class="chat-online"><span class="chat-dot"></span>Online</div>
-        </div>
-      </div>
-      <button class="chat-x" onclick="toggleChat()">×</button>
-    </div>
-    <div class="chat-msgs" id="chat-msgs">
-      <div class="cmsg cmsg-bot">Hi! I'm your PermitIQ assistant. Ask me anything about building permits, business licenses, zoning, or the ZBA process in Boston. 🏗️</div>
-    </div>
-    <div class="chat-input-row">
-      <input class="chat-input" id="chat-input" placeholder="Ask a permit question…" onkeydown="if(event.key==='Enter')sendChat()">
-      <button class="chat-send" onclick="sendChat()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
-    </div>
-  </div>
-</div>
-<button class="chat-bubble" id="chat-bubble" onclick="toggleChat()" title="Ask a permit question">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-</button>
 </body>
 </html>
