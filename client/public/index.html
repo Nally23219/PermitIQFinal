@@ -232,6 +232,51 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 .chat-input:focus{border-color:var(--bb);}
 .chat-send{width:38px;height:38px;border-radius:10px;background:var(--bb);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
 .chat-send:hover{background:#0a2560;transform:scale(1.05);}
+
+/* DISCLAIMER MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-box{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:2rem;box-shadow:0 24px 80px rgba(0,0,0,0.3);}
+.modal-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--bb);margin-bottom:1rem;}
+.modal-logo span{color:var(--bg);}
+.modal-title{font-size:17px;font-weight:700;color:var(--t1);margin-bottom:0.75rem;}
+.modal-body{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:1.25rem;}
+.modal-body strong{color:var(--t1);}
+.modal-check{display:flex;align-items:flex-start;gap:10px;margin-bottom:1.25rem;font-size:13px;color:var(--t2);cursor:pointer;}
+.modal-check input{margin-top:2px;flex-shrink:0;}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;}
+
+/* LANGUAGE TOGGLE */
+.lang-toggle{display:flex;gap:4px;background:rgba(255,255,255,0.1);border-radius:8px;padding:3px;}
+.lang-btn{background:none;border:none;color:rgba(255,255,255,0.6);font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.lang-btn.active{background:rgba(255,255,255,0.2);color:#fff;}
+
+/* FEEDBACK */
+.feedback-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--bd);background:var(--bc);font-size:12px;color:var(--t3);}
+.fb-btn{background:none;border:1.5px solid var(--bd2);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:16px;transition:all 0.15s;}
+.fb-btn:hover{border-color:var(--bb);background:var(--inb);}
+.fb-btn.selected{background:var(--bb);border-color:var(--bb);}
+
+/* ZONING LOOKUP */
+.zoning-result{background:#fff;border:1px solid var(--bd);border-radius:var(--rl);padding:1.25rem;margin-top:1rem;}
+.zoning-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1rem;}
+.zoning-cell{background:var(--bc);border-radius:var(--r);padding:10px 12px;}
+.zoning-cell-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);margin-bottom:4px;}
+.zoning-cell-val{font-size:14px;font-weight:600;color:var(--bb);}
+
+/* SHARE BUTTON */
+.share-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bb);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:3000;opacity:0;transition:opacity 0.3s;}
+.share-toast.show{opacity:1;}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:1.5rem;}
+.dash-card{background:#fff;border:1px solid var(--bd);border-radius:var(--rl);padding:1.25rem;text-align:center;box-shadow:var(--sh);}
+.dash-num{font-family:'DM Serif Display',serif;font-size:36px;color:var(--bb);line-height:1;}
+.dash-label{font-size:12px;color:var(--t3);margin-top:6px;}
+.dash-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.dash-bar-label{font-size:12px;color:var(--t2);min-width:140px;text-align:right;}
+.dash-bar-bg{flex:1;height:8px;background:var(--bd);border-radius:4px;overflow:hidden;}
+.dash-bar-fill{height:100%;background:var(--bb);border-radius:4px;}
+.dash-bar-count{font-size:11px;color:var(--t3);min-width:24px;}
 </style>
 </head>
 <body>
@@ -245,6 +290,10 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
     </div>
   </a>
   <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')" id="lang-en">EN</button>
+      <button class="lang-btn" onclick="setLang('es')" id="lang-es">ES</button>
+    </div>
     <span class="nbadge">780 CMR · Boston Zoning Code</span>
     <span class="nbadge gold">AI-Powered</span>
   </div>
@@ -394,6 +443,19 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <button class="btn btn-o btn-sm" onclick="clearNewPermit()">Clear</button>
       </div>
       <div id="np-result"></div>
+    </div>
+
+    <!-- Address Zoning Lookup -->
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">Address Zoning Lookup</div><div class="card-sub">Type a Boston address to instantly see its zoning district, parcel data, and dimensional requirements</div></div>
+        <span class="cbadge cb-blue">Live Data</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:1rem;">
+        <input type="text" id="zoning-addr" placeholder="e.g. 548 East Third Street, South Boston" style="flex:1;" onkeydown="if(event.key==='Enter')lookupZoning()">
+        <button class="btn btn-p" onclick="lookupZoning()" style="white-space:nowrap;">Look Up</button>
+      </div>
+      <div id="zoning-result"></div>
     </div>
 
     <!-- Quick reference: No-permit work -->
@@ -579,6 +641,23 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 
 </div>
 
+<!-- DASHBOARD PAGE (hidden by default, accessed via /dashboard) -->
+<div id="dashboard-page" style="display:none;max-width:960px;margin:2rem auto;padding:0 1.5rem;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+    <div>
+      <div style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--bb);">Usage Dashboard</div>
+      <div style="font-size:13px;color:var(--t3);">PermitIQ Boston — Admin View</div>
+    </div>
+    <button class="btn btn-o btn-sm" onclick="hideDashboard()">← Back to App</button>
+  </div>
+  <div id="dash-content"><div class="callout co-blue"><div class="co-icon">🔒</div><div>Enter the dashboard password to view analytics.</div></div>
+    <div style="display:flex;gap:10px;margin-top:1rem;">
+      <input type="password" id="dash-pwd" placeholder="Dashboard password" style="max-width:280px;" onkeydown="if(event.key==='Enter')loadDashboard()">
+      <button class="btn btn-p" onclick="loadDashboard()">Unlock</button>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <div class="footer-inner">
     <div>
@@ -589,6 +668,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
       <a class="fl" href="https://www.boston.gov/departments/inspectional-services" target="_blank">ISD Boston</a>
       <a class="fl" href="https://bostonplans.org" target="_blank">BPDA</a>
       <a class="fl" href="https://www.mass.gov/building-code" target="_blank">780 CMR</a>
+      <a class="fl" href="#" onclick="showDashboard();return false;">Admin</a>
     </div>
   </div>
 </footer>
@@ -802,11 +882,13 @@ function likelihoodSection(body){
     </div>
   </div>`;
 }
+let _currentReportId = null;
 function resultHtml(title,meta,body,actions){
   const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  // Strip the raw CURRENT_ODDS/REVISED_ODDS lines from body before displaying
   const cleanBody = body.replace(/CURRENT_ODDS:\s*\d+%\n?/gi,'').replace(/REVISED_ODDS:\s*\d+%\n?/gi,'');
-  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>${likelihoodSection(body)}<div class="rbody" id="report-body">${fmt(cleanBody)}</div><div class="ract">${actions}</div></div>`;
+  const rid = 'r_'+Math.random().toString(36).slice(2,9);
+  _currentReportId = rid;
+  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>${likelihoodSection(body)}<div class="rbody" id="report-body">${fmt(cleanBody)}</div><div class="ract">${actions}</div><div class="feedback-row"><span>Was this analysis helpful?</span><button class="fb-btn" id="fb-up-${rid}" onclick="submitFeedback('up','${rid}')">👍</button><button class="fb-btn" id="fb-dn-${rid}" onclick="submitFeedback('down','${rid}')">👎</button><button class="btn btn-o btn-sm" style="margin-left:auto;font-size:11px;" onclick="shareReport('${rid}')">🔗 Share</button></div></div>`;
 }
 
 // ═══ NEW PERMIT ═══
@@ -850,7 +932,7 @@ async function runNewPermit(){
   }
   const msg = npContent;
   try{
-    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:NP_SYS,messages:[{role:'user',content:msg}]})});
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:(window._langInstruction||'')+NP_SYS,messages:[{role:'user',content:msg}]})});
     const d=await r.json();
     const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
     document.getElementById('np-result').innerHTML=resultHtml('Project Permit Analysis','Boston Zoning Code + 780 CMR',raw,
@@ -1076,7 +1158,7 @@ async function runAnalysis(){
   }
 
   try{
-    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:DENY_SYS,messages:[{role:'user',content:msgContent}]})});
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:(window._langInstruction||'')+DENY_SYS,messages:[{role:'user',content:msgContent}]})});
     const d=await r.json();
     const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
     sessionCount++;
@@ -1227,6 +1309,175 @@ function followUp(t){
   }, 300);
 }
 
+// ═══ DISCLAIMER ═══
+function acceptDisclaimer(){
+  document.getElementById('disclaimer-modal').style.display='none';
+  localStorage.setItem('piq_disclaimer','1');
+}
+if(localStorage.getItem('piq_disclaimer')) {
+  document.getElementById('disclaimer-modal').style.display='none';
+}
+
+// ═══ LANGUAGE ═══
+const TRANSLATIONS = {
+  en: {
+    hero_tag: 'Boston Inspectional Services',
+    hero_h1: 'Faster permits.<br><em>Fewer denials.</em> Less back-and-forth.',
+    hero_desc: 'From new project planning to denial analysis and ZBA appeal prep — AI-guided permitting built on official Boston zoning code, ISD requirements, and 780 CMR.',
+    tab1: 'New Permit Advisor', tab1sub: 'Do you even need one?',
+    tab2: 'Denial Analyzer', tab2sub: 'Paste refusal, get action plan',
+    tab3: 'Pre-Submit Checklist', tab3sub: 'Avoid denials before they happen',
+    tab4: 'ZBA Appeal Guide', tab4sub: 'Step-by-step hearing roadmap',
+    analyze_btn: '🔍 Analyze Denial & Generate Action Plan',
+    np_btn: '🏗️ Analyze My Project',
+  },
+  es: {
+    hero_tag: 'Servicios de Inspección de Boston',
+    hero_h1: 'Permisos más rápidos.<br><em>Menos denegaciones.</em> Menos trámites.',
+    hero_desc: 'Desde la planificación de nuevos proyectos hasta el análisis de denegaciones — orientación de IA basada en el código de zonificación oficial de Boston, requisitos del ISD y 780 CMR.',
+    tab1: 'Asesor de Permisos', tab1sub: '¿Necesitas uno?',
+    tab2: 'Analizador de Denegaciones', tab2sub: 'Pega tu rechazo, obtén un plan',
+    tab3: 'Lista de Verificación', tab3sub: 'Evita denegaciones antes de enviar',
+    tab4: 'Guía de Apelación ZBA', tab4sub: 'Hoja de ruta paso a paso',
+    analyze_btn: '🔍 Analizar Denegación y Generar Plan',
+    np_btn: '🏗️ Analizar Mi Proyecto',
+  }
+};
+let currentLang = 'en';
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+  document.getElementById('lang-es').classList.toggle('active', lang==='es');
+  const t = TRANSLATIONS[lang];
+  document.querySelector('.hero-tag').textContent = t.hero_tag;
+  document.querySelector('.hero h1').innerHTML = t.hero_h1;
+  document.querySelector('.hero-desc').textContent = t.hero_desc;
+  const tabs = document.querySelectorAll('.mtab');
+  if(tabs[0]){ tabs[0].querySelector('.mtab-lbl').textContent=t.tab1; tabs[0].querySelector('.mtab-sub').textContent=t.tab1sub; }
+  if(tabs[1]){ tabs[1].querySelector('.mtab-lbl').textContent=t.tab2; tabs[1].querySelector('.mtab-sub').textContent=t.tab2sub; }
+  if(tabs[2]){ tabs[2].querySelector('.mtab-lbl').textContent=t.tab3; tabs[2].querySelector('.mtab-sub').textContent=t.tab3sub; }
+  if(tabs[3]){ tabs[3].querySelector('.mtab-lbl').textContent=t.tab4; tabs[3].querySelector('.mtab-sub').textContent=t.tab4sub; }
+  const analyzeBtn = document.getElementById('analyze-btn');
+  if(analyzeBtn) analyzeBtn.innerHTML = t.analyze_btn;
+  const npBtn = document.getElementById('np-btn');
+  if(npBtn) npBtn.innerHTML = t.np_btn;
+  // Update Claude system prompt language
+  if(lang==='es'){
+    window._langInstruction = 'Respond entirely in Spanish (Español). ';
+  } else {
+    window._langInstruction = '';
+  }
+}
+
+// ═══ FEEDBACK ═══
+async function submitFeedback(rating, rid){
+  document.getElementById('fb-up-'+rid)?.classList.toggle('selected', rating==='up');
+  document.getElementById('fb-dn-'+rid)?.classList.toggle('selected', rating==='down');
+  try {
+    await fetch('/api/feedback', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ report_id: rid, rating, tab: document.querySelector('.mtab.active .mtab-lbl')?.textContent || '' })
+    });
+  } catch(e){ console.log('Feedback error:', e); }
+}
+
+// ═══ SHARE REPORT ═══
+async function shareReport(rid){
+  try {
+    const body = document.getElementById('report-body')?.innerText || '';
+    const r = await fetch('/api/reports/save', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type: document.querySelector('.mtab.active .mtab-lbl')?.textContent || 'analysis',
+        analysis: body,
+        neighborhood: document.getElementById('hood')?.value || document.getElementById('np-hood')?.value || '',
+        projType: document.getElementById('proj-type')?.value || document.getElementById('np-scope')?.value || '',
+      })
+    });
+    const data = await r.json();
+    const url = window.location.origin + '/report/' + data.id;
+    await navigator.clipboard.writeText(url).catch(()=>{});
+    const toast = document.getElementById('share-toast');
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 3000);
+  } catch(e){ alert('Could not generate share link: '+e.message); }
+}
+
+// ═══ ZONING LOOKUP ═══
+async function lookupZoning(){
+  const addr = document.getElementById('zoning-addr').value.trim();
+  if(!addr) return;
+  const el = document.getElementById('zoning-result');
+  el.innerHTML = '<div class="loading-s"><div class="spinner"></div><div class="loading-t">Looking up <strong>'+addr+'</strong>…</div></div>';
+  try {
+    const r = await fetch('/api/zoning/lookup?address='+encodeURIComponent(addr));
+    const d = await r.json();
+    if(d.error){ el.innerHTML='<div class="callout co-gold" style="margin-top:0;"><div class="co-icon">⚠️</div><div>'+d.error+'</div></div>'; return; }
+    const z = d.zoningDistrict;
+    el.innerHTML=`<div class="zoning-result">
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--bb);margin-bottom:4px;">${d.address||addr}</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:1rem;">Owner: ${d.owner||'N/A'} · Built: ${d.yearBuilt||'N/A'} · ${d.floors||'?'} floors</div>
+      <div class="zoning-grid">
+        <div class="zoning-cell"><div class="zoning-cell-label">Zoning District</div><div class="zoning-cell-val">${z?.ZONE_||z?.DISTRICT||'See BPDA'}</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">Article</div><div class="zoning-cell-val">${z?.ARTICLE||'—'}</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">Land Use</div><div class="zoning-cell-val">${d.landUse||'—'}</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">Gross Area</div><div class="zoning-cell-val">${d.grossArea ? d.grossArea.toLocaleString()+' sq ft' : '—'}</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">Living Area</div><div class="zoning-cell-val">${d.livingArea ? d.livingArea.toLocaleString()+' sq ft' : '—'}</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">Status</div><div class="zoning-cell-val" style="color:var(--ok);">${z?.STATUS||'Active'}</div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-p btn-sm" onclick="document.getElementById('np-details').value='Address: ${(d.address||addr).replace(/'/g,"\'")}. Zoning: ${z?.ZONE_||'unknown'}. Lot area: ${d.grossArea||'unknown'} sq ft. Year built: ${d.yearBuilt||'unknown'}.';switchTab('newpermit',document.querySelectorAll('.mtab')[0]);">Use in Permit Advisor →</button>
+        <a class="btn btn-o btn-sm" href="https://bostonplans.org/zoning/zoning-viewer" target="_blank">Full Zoning Map ↗</a>
+      </div>
+    </div>`;
+  } catch(e){
+    el.innerHTML='<div class="callout co-gold" style="margin-top:0;"><div class="co-icon">⚠️</div><div>Lookup failed: '+e.message+'</div></div>';
+  }
+}
+
+// ═══ DASHBOARD ═══
+function showDashboard(){
+  document.querySelector('.main').style.display='none';
+  document.getElementById('dashboard-page').style.display='block';
+}
+function hideDashboard(){
+  document.querySelector('.main').style.display='';
+  document.getElementById('dashboard-page').style.display='none';
+}
+async function loadDashboard(){
+  const pwd = document.getElementById('dash-pwd').value;
+  const el = document.getElementById('dash-content');
+  el.innerHTML='<div class="loading-s"><div class="spinner"></div><div class="loading-t">Loading dashboard…</div></div>';
+  try {
+    const r = await fetch('/api/dashboard/stats', { headers:{'x-dashboard-password': pwd} });
+    if(r.status===401){ el.innerHTML='<div class="callout co-gold"><div class="co-icon">🔒</div><div>Incorrect password.</div></div><div style="display:flex;gap:10px;margin-top:1rem;"><input type="password" id="dash-pwd" placeholder="Try again…" style="max-width:280px;"><button class="btn btn-p" onclick="loadDashboard()">Unlock</button></div>'; return; }
+    const d = await r.json();
+    const topNeighborhoods = d.byNeighborhood.slice(0,5);
+    const maxN = topNeighborhoods[0]?.[1]||1;
+    const topProj = d.byProjType.slice(0,5);
+    const maxP = topProj[0]?.[1]||1;
+    el.innerHTML=`
+      <div class="dash-grid">
+        <div class="dash-card"><div class="dash-num">${d.totalReports}</div><div class="dash-label">Total Analyses</div></div>
+        <div class="dash-card"><div class="dash-num">${d.recentReports}</div><div class="dash-label">Last 30 Days</div></div>
+        <div class="dash-card"><div class="dash-num">${d.satisfactionRate}%</div><div class="dash-label">Satisfaction (👍/${d.thumbsUp+d.thumbsDown} ratings)</div></div>
+        <div class="dash-card"><div class="dash-num">${d.avgOddsBefore||'—'}%</div><div class="dash-label">Avg. Odds As-Submitted</div></div>
+        <div class="dash-card"><div class="dash-num" style="color:var(--ok);">${d.avgOddsAfter||'—'}%</div><div class="dash-label">Avg. Odds After Edits</div></div>
+        <div class="dash-card"><div class="dash-num">${d.byType?.denial||0}</div><div class="dash-label">Denial Analyses</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="card"><div class="card-hd"><div class="card-title">Top Neighborhoods</div></div>
+          ${topNeighborhoods.map(([n,c])=>`<div class="dash-bar-row"><div class="dash-bar-label">${n}</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width:${Math.round(c/maxN*100)}%"></div></div><div class="dash-bar-count">${c}</div></div>`).join('')}
+        </div>
+        <div class="card"><div class="card-hd"><div class="card-title">Top Project Types</div></div>
+          ${topProj.map(([n,c])=>`<div class="dash-bar-row"><div class="dash-bar-label">${n}</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width:${Math.round(c/maxP*100)}%"></div></div><div class="dash-bar-count">${c}</div></div>`).join('')}
+        </div>
+      </div>`;
+  } catch(e){
+    el.innerHTML='<div class="callout co-gold"><div class="co-icon">⚠️</div><div>Error: '+e.message+'</div></div>';
+  }
+}
+
 // ═══ CHATBOT ═══
 let chatOpen=false;
 let chatHistory=[];
@@ -1277,6 +1528,28 @@ async function sendChat(){
   msgs.scrollTop=msgs.scrollHeight;
 }
 </script>
+
+
+<div class="share-toast" id="share-toast">Link copied to clipboard!</div>
+
+<div class="modal-overlay" id="disclaimer-modal">
+  <div class="modal-box">
+    <div class="modal-logo">Permit<span>IQ</span> Boston</div>
+    <div class="modal-title">Before you begin — important notice</div>
+    <div class="modal-body">
+      PermitIQ is an <strong>AI-powered guidance tool</strong> built on Boston Zoning Code, ISD requirements, and 780 CMR. It is designed to help you understand permit requirements, analyze denials, and prepare for ZBA hearings.<br><br>
+      <strong>This is not legal advice.</strong> PermitIQ does not replace a licensed attorney, architect, or professional engineer. Analysis results are informational only and may not reflect the most current code amendments or ISD interpretations.<br><br>
+      For complex variances, ZBA appeals, or any matter with significant financial or legal consequences, always consult a licensed professional.
+    </div>
+    <label class="modal-check">
+      <input type="checkbox" id="disclaimer-check" onchange="document.getElementById('disclaimer-accept').disabled=!this.checked">
+      I understand this tool provides guidance only and is not a substitute for licensed professional advice.
+    </label>
+    <div class="modal-footer">
+      <button class="btn btn-p" id="disclaimer-accept" disabled onclick="acceptDisclaimer()">I Understand — Continue</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
