@@ -9,6 +9,7 @@ import claudeRoute from "./routes/claude.js";
 import chatRoute from "./routes/chat.js";
 import apiClaudeRoute from "./routes/apiclaude.js";
 import redlineRoute from "./routes/redline.js";
+import appeaLetterRoute from "./routes/appealetter.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use("/claude", claudeRoute);
 app.use("/chat", chatRoute);
 app.use("/api/claude", apiClaudeRoute);
 app.use("/api/redline", redlineRoute);
+app.use("/api/appeal-letter", appeaLetterRoute);
 
 app.use(express.static(path.join(__dirname, "client/public")));
 app.get("*", (req, res) => {
