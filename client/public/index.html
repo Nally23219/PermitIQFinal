@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PermitIQ Boston — AI Permit Advisor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bb:#0B2D6B;--bg:#C8922A;--bl:#F4F1EC;--bc:#FAF8F4;
+  --t1:#0D1117;--t2:#4A5568;--t3:#8A95A3;
+  --bd:rgba(11,45,107,0.12);--bd2:rgba(11,45,107,0.25);
+  --ok:#1A6B3C;--okb:#EBF5EF;--wn:#854F0B;--wnb:#FEF3E2;
+  --er:#8B1A1A;--erb:#FDEAEA;--in:#0B2D6B;--inb:#EBF0FA;
+  --r:10px;--rl:16px;
+  --sh:0 2px 12px rgba(11,45,107,0.08);--shl:0 8px 40px rgba(11,45,107,0.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bc);color:var(--t1);min-height:100vh;font-size:15px;line-height:1.6;}
+/* NAV */
+.nav{background:var(--bb);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.2);}
+.nav-seal{width:36px;height:36px;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:15px;color:#fff;flex-shrink:0;}
+.nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.nav-title{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;letter-spacing:-0.3px;}
+.nav-title span{color:var(--bg);}
+.nav-sub{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:0.5px;text-transform:uppercase;margin-top:1px;}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nbadge{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);font-size:11px;padding:3px 10px;border-radius:20px;}
+.nbadge.gold{background:var(--bg);border-color:var(--bg);color:#fff;}
+/* HERO */
+.hero{background:var(--bb);padding:3rem 2rem 3.5rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border-radius:50%;background:rgba(200,146,42,0.08);pointer-events:none;}
+.hero-inner{max-width:960px;margin:0 auto;position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.4);color:#F0C060;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:1rem;}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:#F0C060;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,42px);color:#fff;line-height:1.15;letter-spacing:-0.5px;margin-bottom:1rem;max-width:600px;}
+.hero h1 em{font-style:italic;color:var(--bg);}
+.hero-desc{color:rgba(255,255,255,0.65);font-size:15px;max-width:520px;margin-bottom:2rem;line-height:1.7;}
+.hero-stats{display:flex;gap:2rem;flex-wrap:wrap;}
+.hstat-num{font-family:'DM Serif Display',serif;font-size:28px;color:#fff;line-height:1;}
+.hstat-lbl{font-size:12px;color:rgba(255,255,255,0.5);margin-top:3px;}
+/* MAIN */
+.main{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+/* TABS - 5 columns */
+.mtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:2rem;}
+.mtab{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1rem 0.75rem;cursor:pointer;transition:all 0.18s;text-align:left;display:flex;flex-direction:column;gap:5px;}
+.mtab:hover{border-color:var(--bb);box-shadow:var(--sh);transform:translateY(-1px);}
+.mtab.active{background:var(--bb);border-color:var(--bb);box-shadow:var(--shl);}
+.mtab-icon{width:30px;height:30px;border-radius:7px;background:var(--bl);display:flex;align-items:center;justify-content:center;font-size:15px;transition:background 0.18s;}
+.mtab.active .mtab-icon{background:rgba(255,255,255,0.15);}
+.mtab-lbl{font-size:12px;font-weight:600;color:var(--t1);transition:color 0.18s;line-height:1.2;}
+.mtab.active .mtab-lbl{color:#fff;}
+.mtab-sub{font-size:10.5px;color:var(--t3);line-height:1.3;transition:color 0.18s;}
+.mtab.active .mtab-sub{color:rgba(255,255,255,0.6);}
+/* PANELS */
+.panel{display:none;animation:fadeIn 0.25s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* CARDS */
+.card{background:#fff;border:1px solid var(--bd);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--sh);}
+.card-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:1rem;}
+.card-title{font-family:'DM Serif Display',serif;font-size:19px;color:var(--t1);line-height:1.2;}
+.card-sub{font-size:13px;color:var(--t2);margin-top:3px;}
+.cbadge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.cb-gold{background:var(--wnb);color:var(--wn);border:1px solid #FAC775;}
+.cb-blue{background:var(--inb);color:var(--bb);border:1px solid rgba(11,45,107,0.2);}
+.cb-green{background:var(--okb);color:var(--ok);border:1px solid #9FE1CB;}
+.cb-red{background:var(--erb);color:var(--er);border:1px solid #F7C1C1;}
+/* FORMS */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.fg:last-child{margin-bottom:0;}
+label{font-size:12px;font-weight:600;color:var(--t2);letter-spacing:0.3px;text-transform:uppercase;}
+input[type=text],select,textarea{width:100%;padding:10px 14px;font-size:14px;font-family:'DM Sans',sans-serif;border:1.5px solid var(--bd2);border-radius:var(--r);background:var(--bc);color:var(--t1);transition:border-color 0.15s,box-shadow 0.15s;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--bb);box-shadow:0 0 0 3px rgba(11,45,107,0.08);background:#fff;}
+textarea{min-height:110px;resize:vertical;line-height:1.6;}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;border-radius:var(--r);cursor:pointer;transition:all 0.18s;border:none;text-decoration:none;}
+.btn-p{background:var(--bb);color:#fff;box-shadow:0 2px 8px rgba(11,45,107,0.25);}
+.btn-p:hover{background:#0a2560;box-shadow:0 4px 16px rgba(11,45,107,0.3);transform:translateY(-1px);}
+.btn-p:active{transform:scale(0.98);}
+.btn-p:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.btn-g{background:var(--bg);color:#fff;box-shadow:0 2px 8px rgba(200,146,42,0.3);}
+.btn-g:hover{background:#b8821e;transform:translateY(-1px);}
+.btn-g:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.btn-o{background:#fff;color:var(--bb);border:1.5px solid var(--bd2);}
+.btn-o:hover{background:var(--inb);border-color:var(--bb);}
+.btn-sm{padding:7px 14px;font-size:12px;}
+/* RESULTS */
+.rwrap{background:#fff;border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-top:1.25rem;box-shadow:var(--sh);}
+.rhd{background:var(--bb);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.rhd-title{font-family:'DM Serif Display',serif;font-size:16px;color:#fff;}
+.rhd-meta{font-size:11px;color:rgba(255,255,255,0.55);margin-top:2px;}
+.rbody{padding:1.5rem;font-size:14px;line-height:1.85;color:var(--t1);}
+.rbody strong{font-weight:600;color:var(--bb);}
+.ract{padding:1rem 1.5rem;border-top:1px solid var(--bd);display:flex;gap:8px;flex-wrap:wrap;background:var(--bc);}
+/* LOADING */
+.loading-s{display:flex;align-items:center;gap:14px;padding:2rem 1.5rem;}
+.spinner{width:24px;height:24px;border:2.5px solid var(--bd);border-top-color:var(--bb);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-t{font-size:14px;color:var(--t2);}
+.loading-t strong{color:var(--bb);font-weight:600;}
+/* CALLOUTS */
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r);margin-bottom:1.25rem;font-size:13px;line-height:1.6;}
+.co-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.co-blue{background:var(--inb);border:1px solid rgba(11,45,107,0.15);color:var(--bb);}
+.co-gold{background:var(--wnb);border:1px solid rgba(200,146,42,0.3);color:var(--wn);}
+.co-green{background:var(--okb);border:1px solid rgba(26,107,60,0.2);color:var(--ok);}
+/* VIOLATION CHIPS */
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.vchip{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#fff;border:1.5px solid var(--bd);border-radius:var(--r);cursor:pointer;font-size:12.5px;color:var(--t2);transition:all 0.15s;font-weight:500;}
+.vchip:hover{border-color:var(--bb);color:var(--bb);background:var(--inb);}
+.vchip.sel{background:var(--bb);border-color:var(--bb);color:#fff;}
+/* METRICS */
+.mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
+.mcard{background:#fff;border:1px solid var(--bd);border-radius:var(--r);padding:1rem;text-align:center;}
+.mnum{font-family:'DM Serif Display',serif;font-size:28px;color:var(--bb);line-height:1;margin-bottom:4px;}
+.mlbl{font-size:11px;color:var(--t3);line-height:1.4;}
+/* CHECKLIST */
+.cl{list-style:none;}
+.cli{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--bd);}
+.cli:last-child{border-bottom:none;}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--bd2);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;background:#fff;}
+.chk:hover{border-color:var(--bb);}
+.chk.checked{background:var(--bb);border-color:var(--bb);}
+.chk.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:700;line-height:1;}
+.cl-lbl{font-size:13.5px;font-weight:600;color:var(--t1);}
+.cl-desc{font-size:12px;color:var(--t2);margin-top:2px;line-height:1.5;}
+.ctag{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;padding:1px 7px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+.t-crit{background:var(--erb);color:var(--er);}
+.t-common{background:var(--wnb);color:var(--wn);}
+.t-req{background:var(--inb);color:var(--bb);}
+/* PROGRESS */
+.prog-wrap{margin:1.25rem 0 0.5rem;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:6px;}
+.prog-bg{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--bb);border-radius:3px;transition:width 0.4s cubic-bezier(.4,0,.2,1);}
+/* TIMELINE */
+.tl{position:relative;}
+.tls{display:flex;gap:16px;padding-bottom:1.75rem;}
+.tls:last-child{padding-bottom:0;}
+.tl-left{display:flex;flex-direction:column;align-items:center;}
+.tl-num{width:32px;height:32px;border-radius:50%;background:var(--bb);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;}
+.tl-line{width:2px;flex:1;background:var(--bd);margin-top:4px;}
+.tls:last-child .tl-line{display:none;}
+.tl-content{padding-top:5px;flex:1;}
+.tl-title{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.dl-pill{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;padding:2px 8px;border-radius:4px;background:var(--erb);color:var(--er);border:1px solid #F7C1C1;}
+.tl-body{font-size:13px;color:var(--t2);line-height:1.65;}
+.tl-tip{margin-top:8px;padding:8px 12px;background:var(--inb);border-left:3px solid var(--bb);border-radius:0 var(--r) var(--r) 0;font-size:12px;color:var(--in);}
+/* ── UPLOAD ZONE ── */
+.upload-zone{border:2px dashed var(--bd2);border-radius:var(--rl);padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bc);position:relative;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--bb);background:var(--inb);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:36px;margin-bottom:0.75rem;}
+.upload-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px;}
+.upload-sub{font-size:13px;color:var(--t2);}
+.file-list{margin-top:1rem;display:flex;flex-direction:column;gap:8px;}
+.file-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border:1px solid var(--bd);border-radius:var(--r);}
+.file-icon{font-size:20px;flex-shrink:0;}
+.file-name{font-size:13px;font-weight:500;color:var(--t1);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-size{font-size:11px;color:var(--t3);}
+.file-remove{background:none;border:none;cursor:pointer;color:var(--t3);font-size:16px;padding:2px 6px;border-radius:4px;}
+.file-remove:hover{color:var(--er);background:var(--erb);}
+.file-status{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;padding:2px 8px;border-radius:4px;}
+.fs-ok{background:var(--okb);color:var(--ok);}
+.fs-proc{background:var(--inb);color:var(--bb);}
+/* DECISION TREE (new permit) */
+.dtree{display:flex;flex-direction:column;gap:10px;}
+.dq{background:var(--bc);border:1.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;}
+.dq-header{padding:14px 18px;font-size:14px;font-weight:600;color:var(--t1);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.dq-header:hover{background:var(--inb);}
+.dq-arrow{font-size:12px;transition:transform 0.2s;color:var(--t3);}
+.dq.open .dq-arrow{transform:rotate(180deg);}
+.dq-body{display:none;padding:0 18px 18px;}
+.dq.open .dq-body{display:block;}
+.dq-opts{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.dq-opt{padding:10px 14px;border:1.5px solid var(--bd);border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--t2);transition:all 0.15s;background:#fff;}
+.dq-opt:hover{border-color:var(--bb);color:var(--bb);background:var(--inb);}
+.dq-opt.picked{background:var(--bb);border-color:var(--bb);color:#fff;}
+/* PERMIT TYPE RESULT CARD */
+.ptype-result{background:#fff;border:2px solid var(--bb);border-radius:var(--rl);padding:1.25rem;margin-top:1rem;}
+.ptype-verdict{font-family:'DM Serif Display',serif;font-size:22px;color:var(--bb);margin-bottom:6px;}
+.ptype-sub{font-size:13px;color:var(--t2);margin-bottom:1rem;}
+.ptype-steps{list-style:none;counter-reset:pstep;}
+.ptype-steps li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px;color:var(--t2);}
+.ptype-steps li:last-child{border:none;}
+.pstep-num{width:22px;height:22px;border-radius:50%;background:var(--bb);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+/* DOWNLOAD BUTTON */
+.dl-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;background:var(--bb);color:#fff;border:none;border-radius:var(--r);cursor:pointer;text-decoration:none;transition:all 0.18s;}
+.dl-btn:hover{background:#0a2560;transform:translateY(-1px);}
+/* FOOTER */
+.footer{background:var(--bb);padding:1.5rem 2rem;margin-top:3rem;}
+.footer-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.footer-brand{font-family:'DM Serif Display',serif;font-size:16px;color:#fff;}
+.footer-brand span{color:var(--bg);}
+.footer-note{font-size:11px;color:rgba(255,255,255,0.4);max-width:400px;line-height:1.5;}
+.footer-links{display:flex;gap:16px;}
+.fl{font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;}
+.fl:hover{color:var(--bg);}
+@media(max-width:700px){.frow,.mrow,.vgrid{grid-template-columns:1fr;}.mtabs{grid-template-columns:1fr 1fr;}}
+@media(max-width:420px){.mtabs{grid-template-columns:1fr;}}
+
+/* ── CHATBOT ── */
+.chat-bubble{position:fixed;bottom:28px;right:28px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#0B2D6B,#1a50b0);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(11,45,107,0.4);z-index:2000;transition:all 0.25s;font-size:24px;}
+.chat-bubble:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(11,45,107,0.5);}
+.chat-window{position:fixed;bottom:98px;right:28px;width:350px;height:490px;background:#fff;border:1px solid rgba(11,45,107,0.15);border-radius:16px;box-shadow:0 16px 60px rgba(11,45,107,0.2);display:flex;flex-direction:column;z-index:2000;overflow:hidden;animation:chatSlide 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes chatSlide{from{opacity:0;transform:translateY(16px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+.chat-hd{background:var(--bb);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
+.chat-hd-info{display:flex;align-items:center;gap:10px;}
+.chat-avatar{width:34px;height:34px;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:14px;color:#fff;}
+.chat-name{font-size:14px;font-weight:600;color:#fff;}
+.chat-online{font-size:11px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:4px;margin-top:2px;}
+.chat-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;display:inline-block;}
+.chat-x{background:none;border:none;color:rgba(255,255,255,0.7);font-size:22px;cursor:pointer;line-height:1;padding:0;}
+.chat-x:hover{color:#fff;}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f8f9fc;}
+.chat-msgs::-webkit-scrollbar{width:4px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px;}
+.cmsg{max-width:82%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;animation:msgPop 0.2s ease;}
+@keyframes msgPop{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.cmsg-bot{align-self:flex-start;background:#fff;color:var(--t1);border:1px solid var(--bd);border-bottom-left-radius:4px;box-shadow:var(--sh);}
+.cmsg-user{align-self:flex-end;background:var(--bb);color:#fff;border-bottom-right-radius:4px;}
+.cmsg-typing{display:flex;gap:5px;align-items:center;padding:13px 16px;}
+.cmsg-typing span{width:7px;height:7px;background:var(--t3);border-radius:50%;animation:tdot 1.2s infinite;}
+.cmsg-typing span:nth-child(2){animation-delay:0.2s;}
+.cmsg-typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+.chat-input-row{padding:10px;display:flex;gap:8px;border-top:1px solid var(--bd);background:#fff;}
+.chat-input{flex:1;border:1.5px solid var(--bd2);border-radius:10px;padding:9px 13px;font-size:13.5px;font-family:'DM Sans',sans-serif;outline:none;color:var(--t1);transition:border-color 0.2s;}
+.chat-input:focus{border-color:var(--bb);}
+.chat-send{width:38px;height:38px;border-radius:10px;background:var(--bb);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.chat-send:hover{background:#0a2560;transform:scale(1.05);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="#">
+    <div class="nav-seal">B</div>
+    <div>
+      <div class="nav-title">Permit<span>IQ</span></div>
+      <div class="nav-sub">City of Boston · ISD Portal</div>
+    </div>
+  </a>
+  <div class="nav-right">
+    <span class="nbadge">780 CMR · Boston Zoning Code</span>
+    <span class="nbadge gold">AI-Powered</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Boston Inspectional Services</div>
+    <h1>Faster permits.<br><em>Fewer denials.</em> Less back-and-forth.</h1>
+    <p class="hero-desc">From new project planning to denial analysis and ZBA appeal prep — AI-guided permitting built on official Boston zoning code, ISD requirements, and 780 CMR.</p>
+    <div class="hero-stats">
+      <div><div class="hstat-num">45</div><div class="hstat-lbl">Days to file ZBA appeal</div></div>
+      <div><div class="hstat-num">2–3k</div><div class="hstat-lbl">ISD calls per week</div></div>
+      <div><div class="hstat-num">4–8w</div><div class="hstat-lbl">Typical ZBA wait time</div></div>
+      <div><div class="hstat-num">40%+</div><div class="hstat-lbl">Denials are preventable</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- 5-TAB NAV -->
+  <div class="mtabs" role="tablist">
+    <button class="mtab active" onclick="switchTab('newpermit',this)" role="tab">
+      <div class="mtab-icon">🏗️</div>
+      <div class="mtab-lbl">New Permit Advisor</div>
+      <div class="mtab-sub">Do you even need one?</div>
+    </button>
+    <button class="mtab" onclick="switchTab('upload',this)" role="tab">
+      <div class="mtab-icon">📎</div>
+      <div class="mtab-lbl">Upload Documents</div>
+      <div class="mtab-sub">Plans + denial letter → instant plan</div>
+    </button>
+    <button class="mtab" onclick="switchTab('analyze',this)" role="tab">
+      <div class="mtab-icon">🔍</div>
+      <div class="mtab-lbl">Denial Analyzer</div>
+      <div class="mtab-sub">Paste refusal, get action plan</div>
+    </button>
+    <button class="mtab" onclick="switchTab('checklist',this)" role="tab">
+      <div class="mtab-icon">✅</div>
+      <div class="mtab-lbl">Pre-Submit Checklist</div>
+      <div class="mtab-sub">Avoid denials before they happen</div>
+    </button>
+    <button class="mtab" onclick="switchTab('process',this)" role="tab">
+      <div class="mtab-icon">📋</div>
+      <div class="mtab-lbl">ZBA Appeal Guide</div>
+      <div class="mtab-sub">Step-by-step hearing roadmap</div>
+    </button>
+  </div>
+
+  <!-- ══════════ NEW PERMIT PANEL ══════════ -->
+  <div id="panel-newpermit" class="panel active">
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">New Permit Advisor</div><div class="card-sub">Find out what permit you need — or if you need one at all — before spending time on applications</div></div>
+        <span class="cbadge cb-green">Start Here</span>
+      </div>
+      <div class="callout co-blue"><div class="co-icon">💡</div><div>Answer a few questions about your project and the AI will tell you exactly what permit type is required, whether you're at risk of denial, what documents to prepare, and estimated timeline — <strong>before you submit anything.</strong></div></div>
+
+      <div class="frow">
+        <div class="fg" style="margin:0">
+          <label>What are you planning to do?</label>
+          <select id="np-scope" onchange="updateNewPermit()">
+            <option value="">Select scope of work…</option>
+            <optgroup label="Residential">
+              <option value="paint_flooring">Interior paint or flooring only</option>
+              <option value="kitchen_bath_cosmetic">Kitchen/bath cosmetic update (no structural)</option>
+              <option value="hvac_replace">Replace HVAC / mechanical systems</option>
+              <option value="roof_replace">Roof replacement (same footprint)</option>
+              <option value="windows_doors">Replace windows or exterior doors</option>
+              <option value="deck_porch">New deck, porch, or pergola</option>
+              <option value="shed_garage">New shed or detached garage</option>
+              <option value="addition">Addition / bump-out / expansion</option>
+              <option value="dormer">Dormer or roof alteration</option>
+              <option value="adu">Accessory dwelling unit (ADU / in-law)</option>
+              <option value="new_construction">New residential construction</option>
+              <option value="demolition">Demolition (partial or full)</option>
+              <option value="finish_basement">Finish basement / add living space</option>
+              <option value="structural_interior">Interior structural work (remove wall, beam)</option>
+            </optgroup>
+            <optgroup label="Commercial">
+              <option value="commercial_reno">Commercial interior renovation</option>
+              <option value="change_use">Change of use (e.g. office to restaurant)</option>
+              <option value="sign">New sign installation</option>
+              <option value="mixed_use">Mixed-use new construction</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Boston Neighborhood</label>
+          <select id="np-hood" onchange="updateNewPermit()">
+            <option value="">Select area…</option>
+            <optgroup label="Boston">
+              <option>Back Bay</option><option>South End</option><option>Charlestown</option>
+              <option>Dorchester</option><option>East Boston</option><option>Hyde Park</option>
+              <option>Jamaica Plain</option><option>Mattapan</option><option>Mission Hill</option>
+              <option>Roslindale</option><option>Roxbury</option><option>South Boston</option>
+              <option>West Roxbury</option><option>Fenway / Kenmore</option>
+              <option>Allston / Brighton</option><option>North End</option>
+            </optgroup>
+            <optgroup label="Greater Boston">
+              <option>Cambridge</option><option>Somerville</option><option>Brookline</option>
+              <option>Quincy</option><option>Newton</option><option>Waltham</option><option>Medford</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg" style="margin:0">
+          <label>Property type</label>
+          <select id="np-proptype" onchange="updateNewPermit()">
+            <option value="">Select…</option>
+            <option value="sfr">Single-family home</option>
+            <option value="2fam">2-family home</option>
+            <option value="3fam">3-family home</option>
+            <option value="condo">Condo unit</option>
+            <option value="multi">Multi-family (4+ units)</option>
+            <option value="commercial">Commercial building</option>
+            <option value="mixed">Mixed-use building</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Is property in a historic / landmark district?</label>
+          <select id="np-historic" onchange="updateNewPermit()">
+            <option value="">Unknown / not sure</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Additional project details (optional)</label>
+        <textarea id="np-details" placeholder="Describe your project: dimensions, materials, location on property, any known zoning info, estimated cost…" style="min-height:80px;"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-p" id="np-btn" onclick="runNewPermit()">🏗️ Analyze My Project</button>
+        <button class="btn btn-o btn-sm" onclick="clearNewPermit()">Clear</button>
+      </div>
+      <div id="np-result"></div>
+    </div>
+
+    <!-- Quick reference: No-permit work -->
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">Work that never requires a permit in Boston</div><div class="card-sub">Confirmed by ISD — no filing needed</div></div>
+        <span class="cbadge cb-green">No Permit</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Interior painting</div>
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Carpet / flooring replacement</div>
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Cabinet replacement (same location)</div>
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Cosmetic tile work</div>
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Furniture & fixture swaps (like-for-like)</div>
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Landscaping (non-structural)</div>
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Fence under 6ft (residential)</div>
+        <div style="padding:10px 12px;background:var(--okb);border-radius:var(--r);font-size:13px;color:var(--ok);border:1px solid #9FE1CB;">✓ Gutter cleaning / minor repairs</div>
+      </div>
+      <div class="callout co-gold" style="margin-top:1rem;margin-bottom:0;">
+        <div class="co-icon">⚠️</div>
+        <div>Electrical, plumbing, and gas work <strong>always require separate permits</strong> regardless of scope, even for simple fixture swaps in some cases. When in doubt, call ISD: 617-635-5300.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ UPLOAD PANEL ══════════ -->
+  <div id="panel-upload" class="panel">
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">Upload Documents for Instant Analysis</div><div class="card-sub">Attach your ISD denial letter and/or architectural plans — the AI reads them and generates your action plan automatically</div></div>
+        <span class="cbadge cb-blue">AI Document Read</span>
+      </div>
+
+      <div class="callout co-blue"><div class="co-icon">📎</div><div>Upload your <strong>ISD refusal/denial letter</strong> (PDF or image) and optionally your <strong>site plans or drawings</strong>. The AI will extract the violations, cross-reference the Boston Zoning Code, and generate a complete action plan — no manual copying required.</div></div>
+
+      <!-- Upload zone: denial letter -->
+      <div class="fg">
+        <label>ISD Denial / Refusal Letter <span style="color:var(--er);font-weight:700;">*</span></label>
+        <div class="upload-zone" id="zone-denial" ondragover="dragOver(event,'zone-denial')" ondragleave="dragLeave('zone-denial')" ondrop="dropFile(event,'denial')">
+          <input type="file" id="file-denial" accept=".pdf,.png,.jpg,.jpeg" onchange="handleFile(this,'denial')">
+          <div class="upload-icon">📄</div>
+          <div class="upload-title">Drop your denial letter here</div>
+          <div class="upload-sub">PDF, PNG, or JPG · Click or drag to upload</div>
+        </div>
+        <div id="list-denial" class="file-list"></div>
+      </div>
+
+      <!-- Upload zone: plans -->
+      <div class="fg">
+        <label>Architectural Plans / Site Drawings <span style="font-size:11px;font-weight:400;text-transform:none;color:var(--t3);">optional but recommended</span></label>
+        <div class="upload-zone" id="zone-plans" ondragover="dragOver(event,'zone-plans')" ondragleave="dragLeave('zone-plans')" ondrop="dropFile(event,'plans')">
+          <input type="file" id="file-plans" accept=".pdf,.png,.jpg,.jpeg" multiple onchange="handleFile(this,'plans')">
+          <div class="upload-icon">📐</div>
+          <div class="upload-title">Drop your plans here</div>
+          <div class="upload-sub">PDF, PNG, or JPG · Multiple files supported</div>
+        </div>
+        <div id="list-plans" class="file-list"></div>
+      </div>
+
+      <div class="frow">
+        <div class="fg" style="margin:0">
+          <label>Project Type (helps AI focus)</label>
+          <select id="up-projtype">
+            <option value="">Optional — select if known…</option>
+            <option>Residential addition / expansion</option>
+            <option>New residential construction</option>
+            <option>Accessory dwelling unit (ADU)</option>
+            <option>Deck, porch, or shed</option>
+            <option>Dormer or roof alteration</option>
+            <option>Commercial renovation</option>
+            <option>Change of use</option>
+            <option>Mixed-use development</option>
+            <option>Interior renovation (structural)</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Neighborhood</label>
+          <select id="up-hood">
+            <option value="">Optional…</option>
+            <optgroup label="Boston">
+              <option>Back Bay</option><option>South End</option><option>Charlestown</option>
+              <option>Dorchester</option><option>East Boston</option><option>Hyde Park</option>
+              <option>Jamaica Plain</option><option>Mattapan</option><option>Roslindale</option>
+              <option>Roxbury</option><option>South Boston</option><option>West Roxbury</option>
+            </optgroup>
+            <optgroup label="Greater Boston">
+              <option>Cambridge</option><option>Somerville</option><option>Brookline</option><option>Quincy</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="btn btn-g" id="upload-btn" onclick="runUploadAnalysis()">📎 Analyze Uploaded Documents</button>
+        <button class="btn btn-o btn-sm" onclick="clearUploads()">Clear all</button>
+      </div>
+      <div style="margin-top:0.75rem;">
+        <a id="download-report" class="dl-btn" style="display:none;" href="#" onclick="downloadReport(event)">⬇ Download Action Plan (PDF)</a>
+      </div>
+      <div id="upload-result"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ ANALYZE PANEL ══════════ -->
+  <div id="panel-analyze" class="panel">
+    <div class="mrow">
+      <div class="mcard"><div class="mnum" id="m-count">0</div><div class="mlbl">Denials analyzed this session</div></div>
+      <div class="mcard"><div class="mnum" style="color:var(--ok)">62%</div><div class="mlbl">Curable without ZBA hearing</div></div>
+      <div class="mcard"><div class="mnum" style="color:var(--bg)">~$300</div><div class="mlbl">Avg. saved in consultant fees</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">Permit Denial Analyzer</div><div class="card-sub">Cross-references Boston Zoning Code, ISD requirements, and 780 CMR</div></div>
+        <span class="cbadge cb-blue">AI Analysis</span>
+      </div>
+      <div class="callout co-blue"><div class="co-icon">ℹ️</div><div>Paste your ISD refusal letter text below. The AI will classify your violation, determine if it can be cured without a ZBA appeal, and generate a step-by-step action plan with draft appeal language.</div></div>
+      <div class="fg">
+        <label>Denial / Refusal Letter Text</label>
+        <textarea id="denial-in" placeholder="e.g. 'Denied — proposed addition exceeds maximum FAR of 2.0 for a 3F-2000 district. Proposed FAR is 2.4. Side yard setback: required 5ft, proposed 3ft.'"></textarea>
+      </div>
+      <div class="frow">
+        <div class="fg" style="margin:0">
+          <label>Project Type</label>
+          <select id="proj-type">
+            <option value="">Select project type…</option>
+            <option>Residential addition / expansion</option><option>New residential construction</option>
+            <option>Accessory dwelling unit (ADU)</option><option>Deck, porch, or shed</option>
+            <option>Dormer or roof alteration</option><option>Commercial renovation</option>
+            <option>Change of use</option><option>Mixed-use development</option>
+            <option>Short-term rental conversion</option><option>Interior renovation (structural)</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Neighborhood / City</label>
+          <select id="hood">
+            <option value="">Select area…</option>
+            <optgroup label="Boston">
+              <option>Back Bay</option><option>South End</option><option>Charlestown</option>
+              <option>Dorchester</option><option>East Boston</option><option>Hyde Park</option>
+              <option>Jamaica Plain</option><option>Mattapan</option><option>Mission Hill</option>
+              <option>Roslindale</option><option>Roxbury</option><option>South Boston</option>
+              <option>West Roxbury</option><option>Fenway / Kenmore</option>
+              <option>Allston / Brighton</option><option>North End</option>
+            </optgroup>
+            <optgroup label="Greater Boston">
+              <option>Cambridge</option><option>Somerville</option><option>Brookline</option>
+              <option>Quincy</option><option>Newton</option><option>Waltham</option><option>Medford</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Violation Type (select all that apply)</label>
+        <div class="vgrid">
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="FAR / Floor Area Ratio">📐 FAR / Floor Area Ratio</div>
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="Setback (front/side/rear)">↔️ Setback (front/side/rear)</div>
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="Building height">↕️ Building height</div>
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="Lot coverage">🟦 Lot coverage</div>
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="Use / zoning district mismatch">🚫 Use / zoning mismatch</div>
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="Missing / incomplete documents">📄 Missing documents</div>
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="Parking requirements">🅿️ Parking requirements</div>
+          <div class="vchip" onclick="this.classList.toggle('sel')" data-v="780 CMR state building code">🏛️ State building code (780 CMR)</div>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Additional Context (optional)</label>
+        <textarea id="ctx-in" placeholder="Property details, lot size, year built, prior permits, any relevant history…" style="min-height:70px;"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-p" id="analyze-btn" onclick="runAnalysis()">🔍 Analyze Denial &amp; Generate Action Plan</button>
+        <button class="btn btn-o btn-sm" onclick="clearForm()">Clear</button>
+      </div>
+      <div id="result-area"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ CHECKLIST PANEL ══════════ -->
+  <div id="panel-checklist" class="panel">
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">Pre-Submission Checklist</div><div class="card-sub">Complete before filing with ISD to prevent automatic denial</div></div>
+        <span class="cbadge cb-gold">12 Items</span>
+      </div>
+      <div class="callout co-gold"><div class="co-icon">⚠️</div><div><strong>Most Boston ISD denials are preventable.</strong> Inconsistent dimensions, wrong permit type, and missing documents account for over 40% of refusals. Check these before you submit.</div></div>
+      <div class="prog-wrap">
+        <div class="prog-lbl"><span>Completion</span><span id="prog-lbl">0 of 12 complete</span></div>
+        <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <ul class="cl">
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Correct permit type selected <span class="ctag t-crit">Critical</span></div><div class="cl-desc">Short Form = cosmetic/minor work only, no structural changes. Long Form required for additions, structural work, change of use. Wrong form = immediate stall at counter.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Zoning district confirmed via BPDA Zoning Viewer <span class="ctag t-crit">Critical</span></div><div class="cl-desc">Visit bostonplans.org. Confirm your exact district and check for overlays: flood plain, design review district, landmarks, Coastal Flood Resilience Overlay (CFROD).</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">FAR, setbacks, height, and lot coverage calculated <span class="ctag t-crit">Critical</span></div><div class="cl-desc">Compare proposed project against the dimensional table for your specific district. FAR excess and setback violations are the #1 cause of Boston ISD denials.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Dimensions consistent across ALL documents <span class="ctag t-crit">Critical</span></div><div class="cl-desc">Survey lot size must exactly match architectural drawings. A 1 sq ft discrepancy triggers automatic return. ISD audits every number across every sheet.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Licensed MA contractor as applicant of record <span class="ctag t-req">Required</span></div><div class="cl-desc">Long Form applications must be filed by a MA licensed contractor — not the homeowner or architect. Homeowners may file Short Form only.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Two sets of stamped construction documents <span class="ctag t-req">Required</span></div><div class="cl-desc">Architectural (existing + proposed), structural if applicable, MEP for relevant projects. Stamped by a MA registered professional.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Zoning Code Summary sheet prepared <span class="ctag t-req">Required</span></div><div class="cl-desc">Long Form applications require a Zoning Code Summary documenting all dimensional standards and compliance status. This is a separate sheet.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Energy code compliance letter included <span class="ctag t-req">Required</span></div><div class="cl-desc">MA Stretch Energy Code or 2009 IECC compliance letter required for most construction projects.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">FEMA flood zone checked <span class="ctag t-common">Common denial</span></div><div class="cl-desc">If in a FEMA flood zone: include Flood Design Affidavit and Flood Elevation Certificate. Check msc.fema.gov.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Article 80 threshold checked <span class="ctag t-common">Common denial</span></div><div class="cl-desc">≥50,000 sqft = BPDA Article 80 Large Project Review. 15,000–50,000 sqft = Small Project Review. Missing this triggers denial without prejudice.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Overlay district requirements addressed <span class="ctag t-common">Common denial</span></div><div class="cl-desc">Design Overlay = BPDA design review. Landmark district = Landmarks Commission review. Historic districts add further review layers.</div></div></li>
+        <li class="cli"><div class="chk" onclick="tick(this)"></div><div><div class="cl-lbl">Separate permits identified (electrical, plumbing, gas) <span class="ctag t-req">Required</span></div><div class="cl-desc">These are issued separately alongside the building permit. Identify all at the start to prevent inspection delays.</div></div></li>
+      </ul>
+      <div style="display:flex;gap:10px;margin-top:1rem;align-items:center;">
+        <button class="btn btn-o btn-sm" onclick="resetChecklist()">Reset all</button>
+        <span style="font-size:12px;color:var(--t3);">Check items as you prepare your submission package</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PROCESS PANEL ══════════ -->
+  <div id="panel-process" class="panel">
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">ZBA Appeal Process Guide</div><div class="card-sub">From ISD refusal letter to ZBA decision</div></div>
+        <span class="cbadge cb-red">45-day window</span>
+      </div>
+      <div class="callout co-gold"><div class="co-icon">⏰</div><div><strong>Critical deadline:</strong> 45 days from your ISD refusal letter to file a ZBA appeal. Miss this and you wait one full year before reapplying — unless dismissed without prejudice.</div></div>
+      <div class="tl">
+        <div class="tls"><div class="tl-left"><div class="tl-num">1</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">Receive ISD refusal letter <span class="dl-pill">Day 0</span></div><div class="tl-body">ISD issues a written refusal identifying specific code violations. Request it via ISDpermits@boston.gov for a timestamped record. This date starts your 45-day window.</div><div class="tl-tip">📌 Keep the envelope — postmark date matters if there's ever a deadline dispute.</div></div></div>
+        <div class="tls"><div class="tl-left"><div class="tl-num">2</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">Assess: cure vs. appeal</div><div class="tl-body">Can the violation be fixed by redesigning plans? Reducing addition size to meet FAR, adjusting walls to meet setbacks. If as-of-right compliance is achievable, resubmit — no ZBA needed.</div><div class="tl-tip">💡 Use the Denial Analyzer tab for an instant cure-vs-appeal assessment.</div></div></div>
+        <div class="tls"><div class="tl-left"><div class="tl-num">3</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">File ZBA appeal <span class="dl-pill">Within 45 days</span></div><div class="tl-body">File at permitsonline.boston.gov or in person at 1010 Massachusetts Ave, 5th Floor (Mon–Fri, 8am–4pm). Fees: $150 flat for residential ≤3 units. $150 per violation for all others.</div><div class="tl-tip">🖥️ Online portal is fastest — avoid in-person wait times.</div></div></div>
+        <div class="tls"><div class="tl-left"><div class="tl-num">4</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">BPDA review <span style="font-size:12px;color:var(--t3);font-weight:400">4–8 weeks</span></div><div class="tl-body">BPDA reviews your appeal and issues a written recommendation. Advisory only — ZBA makes the final call. Contact your neighborhood council during this period; their support influences BPDA's recommendation.</div></div></div>
+        <div class="tls"><div class="tl-left"><div class="tl-num">5</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">ZBA public hearing</div><div class="tl-body">Weekly hearings. You or a representative (attorney, architect, contractor) must appear. Bring: revised plans, photos, tax bill, neighbor petitions, and hardship documentation for variances.</div><div class="tl-tip">⚖️ Variance = unique physical hardship specific to your property. Special permit = lower standard.</div></div></div>
+        <div class="tls"><div class="tl-left"><div class="tl-num">6</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">ZBA decision &amp; finalization</div><div class="tl-body">Meet every condition before ISD issues the final permit. "Dismissed without prejudice" lets you refile sooner than the 1-year wait. Track your case at boston.gov ZBA decisions page.</div></div></div>
+      </div>
+      <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap;">
+        <a class="btn btn-o btn-sm" href="https://www.boston.gov/departments/inspectional-services/how-file-appeal-zoning-board" target="_blank">Official ZBA Filing ↗</a>
+        <a class="btn btn-o btn-sm" href="https://permitsonline.boston.gov" target="_blank">Boston Permits Online ↗</a>
+        <a class="btn btn-o btn-sm" href="https://bostonplans.org" target="_blank">BPDA Zoning Viewer ↗</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Permit<span>IQ</span> Boston</div>
+      <div class="footer-note" style="margin-top:4px;">Built on Boston Zoning Code, ISD requirements, and 780 CMR. For guidance only — not legal advice. Consult a licensed attorney for complex variances.</div>
+    </div>
+    <div class="footer-links">
+      <a class="fl" href="https://www.boston.gov/departments/inspectional-services" target="_blank">ISD Boston</a>
+      <a class="fl" href="https://bostonplans.org" target="_blank">BPDA</a>
+      <a class="fl" href="https://www.mass.gov/building-code" target="_blank">780 CMR</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══ TAB SWITCHING ═══
+function switchTab(name,btn){
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+// ═══ SHARED AI CALL ═══
+const DENY_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code (all Articles), Massachusetts State Building Code (780 CMR 9th Edition), ISD permit procedures, the ZBA process, BPDA Article 80, and common denial reasons.
+
+Structure your response with these exact bold headers:
+
+**VIOLATION CLASSIFICATION**
+Classify violation type(s) and severity: Minor (curable by redesign, no ZBA), Moderate (ZBA likely), or Major (variance with hardship required).
+
+**CAN THIS BE CURED WITHOUT ZBA?**
+Direct yes or no with exact explanation. If yes: specific design changes. If no: why variance/special permit is required.
+
+**RELIEF NEEDED (if ZBA required)**
+Type: Variance (dimensional), Special Permit, or Conditional Use Permit. Name the specific Boston Zoning Code article.
+
+**ACTION PLAN**
+Numbered concrete steps. Include 45-day deadline, fees ($150 flat for ≤3-unit residential; $150 per violation for others), and permitsonline.boston.gov.
+
+**DRAFT APPEAL LANGUAGE**
+A paragraph the applicant can use verbatim for their ZBA filing.
+
+**DOCUMENTS TO GATHER NOW**
+Bulleted list specific to this denial type.
+
+**LIKELIHOOD ASSESSMENT**
+Honest 1-2 sentences on success probability and key factors.
+
+Be practical, cite specific Boston Zoning Code articles or 780 CMR sections, flag when attorney/architect is strongly recommended.`;
+
+const NP_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code, ISD procedures, and 780 CMR.
+
+Analyze a new project and determine permit requirements. Structure your response with these exact bold headers:
+
+**PERMIT REQUIRED?**
+Yes / No / Maybe — with clear explanation.
+
+**PERMIT TYPE**
+Short Form, Long Form, or No Permit. If multiple permits needed (building + electrical + plumbing), list all.
+
+**ZONING RISK ASSESSMENT**
+Based on the project and neighborhood: Low / Medium / High risk of denial. Identify the specific dimensional or use standards most likely to be an issue (FAR, setbacks, height, lot coverage, use table).
+
+**DO YOU NEED ZBA?**
+Clear yes or no with explanation. If ZBA may be needed, identify which type of relief (variance vs special permit).
+
+**REQUIRED DOCUMENTS**
+Bulleted list of exactly what to prepare for this specific project type.
+
+**TIMELINE ESTIMATE**
+Realistic timeline from application to permit issuance for this project type. Include ISD review time and any ZBA wait if applicable.
+
+**NEXT STEPS**
+Numbered list of exactly what to do first, including verifying zoning on bostonplans.org and any pre-submission checklist items specific to this project.
+
+**WATCH OUT FOR**
+Top 2-3 things that could derail this specific project type in Boston.
+
+Be specific, cite Boston Zoning Code articles where relevant.`;
+
+function fmt(raw){
+  return raw
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^(\d+)\.\s(.+)$/gm,'<br><strong style="color:var(--bb)">$1.</strong> $2')
+    .replace(/^[•\-]\s(.+)$/gm,'<br>• $1')
+    .replace(/\n\n/g,'<br><br>')
+    .replace(/\n/g,'<br>');
+}
+
+function loadingHtml(title,sub){
+  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${sub}</div></div></div><div class="loading-s"><div class="spinner"></div><div class="loading-t">Analyzing against <strong>Boston Zoning Code</strong> and ISD requirements…</div></div></div>`;
+}
+
+function resultHtml(title,meta,body,actions){
+  const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div><div class="rbody" id="report-body">${fmt(body)}</div><div class="ract">${actions}</div></div>`;
+}
+
+// ═══ NEW PERMIT ═══
+function clearNewPermit(){
+  document.getElementById('np-scope').value='';
+  document.getElementById('np-hood').value='';
+  document.getElementById('np-proptype').value='';
+  document.getElementById('np-historic').value='';
+  document.getElementById('np-details').value='';
+  document.getElementById('np-result').innerHTML='';
+}
+async function runNewPermit(){
+  const scope=document.getElementById('np-scope').value;
+  const hood=document.getElementById('np-hood').value;
+  const proptype=document.getElementById('np-proptype').value;
+  const historic=document.getElementById('np-historic').value;
+  const details=document.getElementById('np-details').value.trim();
+  if(!scope){document.getElementById('np-result').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Please select your scope of work before analyzing.</div></div>';return;}
+  const btn=document.getElementById('np-btn');
+  btn.disabled=true;btn.textContent='Analyzing…';
+  document.getElementById('np-result').innerHTML=loadingHtml('Analyzing your project…','Checking permit requirements, zoning risk, and timeline');
+  const msg=`Project scope: ${scope}\nNeighborhood: ${hood||'Not specified'}\nProperty type: ${proptype||'Not specified'}\nHistoric/landmark district: ${historic||'Unknown'}\nAdditional details: ${details||'None'}\n\nDetermine permit requirements, ZBA risk, required documents, and next steps.`;
+  try{
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:NP_SYS,messages:[{role:'user',content:msg}]})});
+    const d=await r.json();
+    const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
+    document.getElementById('np-result').innerHTML=resultHtml('Project Permit Analysis','Boston Zoning Code + 780 CMR',raw,
+      `<button class="btn btn-p btn-sm" onclick="switchTab('checklist',document.querySelectorAll('.mtab')[3])">Go to pre-submit checklist →</button><button class="btn btn-o btn-sm" onclick="window.print()">Print / Save PDF 🖨</button>`);
+  }catch(e){
+    document.getElementById('np-result').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Connection error — please try again.</div></div>';
+  }
+  btn.disabled=false;btn.innerHTML='🏗️ Analyze My Project';
+}
+
+// ═══ FILE UPLOAD HANDLING ═══
+let uploadedFiles={denial:[], plans:[]};
+
+function dragOver(e,zoneId){e.preventDefault();document.getElementById(zoneId).classList.add('drag');}
+function dragLeave(zoneId){document.getElementById(zoneId).classList.remove('drag');}
+function dropFile(e,type){
+  e.preventDefault();
+  const zoneId=type==='denial'?'zone-denial':'zone-plans';
+  document.getElementById(zoneId).classList.remove('drag');
+  handleFileList(e.dataTransfer.files,type);
+}
+function handleFile(input,type){handleFileList(input.files,type);}
+function handleFileList(files,type){
+  const maxFiles=type==='denial'?1:5;
+  Array.from(files).slice(0,maxFiles).forEach(f=>{
+    if(uploadedFiles[type].length<maxFiles){
+      uploadedFiles[type].push(f);
+    }
+  });
+  renderFileList(type);
+}
+function renderFileList(type){
+  const container=document.getElementById('list-'+type);
+  container.innerHTML='';
+  uploadedFiles[type].forEach((f,i)=>{
+    const size=(f.size/1024).toFixed(0);
+    const icon=f.type.includes('pdf')?'📄':'🖼️';
+    container.innerHTML+=`<div class="file-item"><span class="file-icon">${icon}</span><span class="file-name">${f.name}</span><span class="file-size">${size} KB</span><span class="file-status fs-ok">Ready</span><button class="file-remove" onclick="removeFile('${type}',${i})" title="Remove">✕</button></div>`;
+  });
+}
+function removeFile(type,idx){
+  uploadedFiles[type].splice(idx,1);
+  renderFileList(type);
+}
+function clearUploads(){
+  uploadedFiles={denial:[],plans:[]};
+  ['denial','plans'].forEach(t=>renderFileList(t));
+  document.getElementById('upload-result').innerHTML='';
+  document.getElementById('download-report').style.display='none';
+  document.getElementById('file-denial').value='';
+  document.getElementById('file-plans').value='';
+}
+
+// Convert file to base64 for API
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=()=>res(reader.result.split(',')[1]);
+    reader.onerror=rej;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function runUploadAnalysis(){
+  if(uploadedFiles.denial.length===0){
+    document.getElementById('upload-result').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Please upload your ISD denial / refusal letter before analyzing.</div></div>';
+    return;
+  }
+  const btn=document.getElementById('upload-btn');
+  btn.disabled=true;btn.textContent='Reading documents…';
+  document.getElementById('upload-result').innerHTML=loadingHtml('Reading your documents…','Extracting violations and cross-referencing Boston Zoning Code');
+  try{
+    // Build message content with images/docs
+    const content=[];
+    // Add denial letter file(s)
+    for(const f of uploadedFiles.denial){
+      const b64=await fileToBase64(f);
+      const mtype=f.type||'image/jpeg';
+      if(mtype.includes('pdf')){
+        content.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}});
+      } else {
+        content.push({type:'image',source:{type:'base64',media_type:mtype,data:b64}});
+      }
+    }
+    // Add plan files
+    for(const f of uploadedFiles.plans){
+      const b64=await fileToBase64(f);
+      const mtype=f.type||'image/jpeg';
+      if(mtype.includes('pdf')){
+        content.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}});
+      } else {
+        content.push({type:'image',source:{type:'base64',media_type:mtype,data:b64}});
+      }
+    }
+    const projType=document.getElementById('up-projtype').value||'';
+    const hood=document.getElementById('up-hood').value||'';
+    content.push({type:'text',text:`Please analyze the uploaded documents. ${uploadedFiles.denial.length>0?'The first file is the ISD denial/refusal letter.':''} ${uploadedFiles.plans.length>0?'The remaining file(s) are architectural plans or drawings.':''}
+Project type: ${projType||'Not specified'}
+Neighborhood: ${hood||'Not specified'}
+
+Extract all violation details from the denial letter, review any plans provided, and generate a complete action plan to overcome the denial.`});
+
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:DENY_SYS,messages:[{role:'user',content}]})});
+    const d=await r.json();
+    const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
+    document.getElementById('upload-result').innerHTML=resultHtml('Document Analysis Complete','Extracted from uploaded files',raw,
+      `<button class="btn btn-p btn-sm" onclick="followUp('Help me draft a formal ZBA appeal letter based on this analysis.')">Draft appeal letter ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What neighbor outreach should I do before my ZBA hearing?')">Neighbor strategy ↗</button><button class="btn btn-o btn-sm" onclick="downloadReport(event)" id="dl-inline">⬇ Download Report</button><button class="btn btn-o btn-sm" onclick="window.print()">Print 🖨</button>`);
+    document.getElementById('download-report').style.display='inline-flex';
+  }catch(e){
+    console.error(e);
+    document.getElementById('upload-result').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Error reading documents — please ensure files are clear images or PDFs under 5MB and try again.</div></div>';
+  }
+  btn.disabled=false;btn.innerHTML='📎 Analyze Uploaded Documents';
+}
+
+// ═══ DOWNLOAD REPORT ═══
+function downloadReport(e){
+  e.preventDefault();
+  const body=document.getElementById('report-body');
+  if(!body)return;
+  const text=body.innerText||body.textContent;
+  const now=new Date().toLocaleDateString('en-US');
+  const content=`PERMITIQ BOSTON — ACTION PLAN\nGenerated: ${now}\n${'='.repeat(50)}\n\n${text}`;
+  const blob=new Blob([content],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='PermitIQ_Action_Plan.txt';
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ═══ TEXT DENIAL ANALYSIS ═══
+let sessionCount=0;
+function clearForm(){
+  document.getElementById('denial-in').value='';
+  document.getElementById('ctx-in').value='';
+  document.getElementById('proj-type').value='';
+  document.getElementById('hood').value='';
+  document.querySelectorAll('.vchip.sel').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('result-area').innerHTML='';
+}
+async function runAnalysis(){
+  const denial=document.getElementById('denial-in').value.trim();
+  if(!denial){document.getElementById('result-area').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Please paste your denial text before analyzing.</div></div>';return;}
+  const projType=document.getElementById('proj-type').value||'Not specified';
+  const hood=document.getElementById('hood').value||'Not specified';
+  const violations=Array.from(document.querySelectorAll('.vchip.sel')).map(c=>c.dataset.v).join(', ')||'Not specified';
+  const ctx=document.getElementById('ctx-in').value.trim()||'None';
+  const btn=document.getElementById('analyze-btn');
+  btn.disabled=true;btn.textContent='Analyzing…';
+  document.getElementById('result-area').innerHTML=loadingHtml('Analyzing your denial…','Cross-referencing Boston Zoning Code, ISD requirements, and 780 CMR');
+  const msg=`Denial/refusal text: ${denial}\nProject type: ${projType}\nNeighborhood: ${hood}\nViolation types: ${violations}\nAdditional context: ${ctx}\n\nProvide a complete actionable analysis and action plan.`;
+  try{
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:DENY_SYS,messages:[{role:'user',content:msg}]})});
+    const d=await r.json();
+    const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
+    sessionCount++;
+    document.getElementById('m-count').textContent=sessionCount;
+    document.getElementById('result-area').innerHTML=resultHtml('Action Plan Generated','Boston Zoning Code + 780 CMR',raw,
+      `<button class="btn btn-p btn-sm" onclick="followUp('Help me draft a full formal ZBA appeal letter based on this denial analysis.')">Draft full appeal letter ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What neighbor outreach strategy should I use for my Boston ZBA hearing?')">Neighbor strategy ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What should I bring to my ZBA hearing and how should I present my case?')">Hearing prep ↗</button><button class="btn btn-o btn-sm" onclick="window.print()">Print 🖨</button>`);
+  }catch(e){
+    document.getElementById('result-area').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Connection error — please try again.</div></div>';
+  }
+  btn.disabled=false;btn.innerHTML='🔍 Analyze Denial &amp; Generate Action Plan';
+}
+
+// ═══ CHECKLIST ═══
+function tick(el){
+  el.classList.toggle('checked');
+  const tot=document.querySelectorAll('.chk').length;
+  const done=document.querySelectorAll('.chk.checked').length;
+  document.getElementById('prog-lbl').textContent=done+' of '+tot+' complete';
+  document.getElementById('prog-fill').style.width=Math.round((done/tot)*100)+'%';
+}
+function resetChecklist(){
+  document.querySelectorAll('.chk').forEach(c=>c.classList.remove('checked'));
+  document.getElementById('prog-lbl').textContent='0 of 12 complete';
+  document.getElementById('prog-fill').style.width='0%';
+}
+function followUp(t){if(typeof sendPrompt==='function')sendPrompt(t);}
+
+// ═══ CHATBOT ═══
+let chatOpen=false;
+let chatHistory=[];
+const CHAT_SYS=`You are PermitIQ Assistant, a helpful expert on permits and licensing for Boston and Greater Boston. You answer questions about construction and building permits, business licenses, zoning, the ZBA process, ISD requirements, and 780 CMR. Keep answers concise and practical — under 150 words unless more detail is truly needed. If a question is outside permitting topics, politely redirect.`;
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chat-win').style.display=chatOpen?'block':'none';
+  const btn=document.getElementById('chat-bubble');
+  btn.innerHTML=chatOpen?'×':'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+  btn.style.fontSize=chatOpen?'26px':'';
+  if(chatOpen)document.getElementById('chat-input').focus();
+}
+
+async function sendChat(){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text)return;
+  input.value='';
+  const msgs=document.getElementById('chat-msgs');
+  msgs.innerHTML+=`<div class="cmsg cmsg-user">${text}</div>`;
+  msgs.innerHTML+='<div class="cmsg cmsg-bot cmsg-typing" id="typing"><span></span><span></span><span></span></div>';
+  msgs.scrollTop=msgs.scrollHeight;
+  chatHistory.push({role:'user',content:text});
+  try{
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:CHAT_SYS,messages:chatHistory.slice(-10)})});
+    const d=await r.json();
+    const reply=d.content?.map(b=>b.text||'').join('')||'Sorry, I had trouble connecting.';
+    chatHistory.push({role:'assistant',content:reply});
+    document.getElementById('typing')?.remove();
+    msgs.innerHTML+=`<div class="cmsg cmsg-bot">${reply}</div>`;
+  }catch(e){
+    document.getElementById('typing')?.remove();
+    msgs.innerHTML+='<div class="cmsg cmsg-bot">Sorry, connection error. Please try again.</div>';
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+}
+</script>
+
+<!-- CHATBOT -->
+<div id="chat-win" style="display:none;">
+  <div class="chat-window">
+    <div class="chat-hd">
+      <div class="chat-hd-info">
+        <div class="chat-avatar">B</div>
+        <div>
+          <div class="chat-name">PermitIQ Assistant</div>
+          <div class="chat-online"><span class="chat-dot"></span>Online</div>
+        </div>
+      </div>
+      <button class="chat-x" onclick="toggleChat()">×</button>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="cmsg cmsg-bot">Hi! I'm your PermitIQ assistant. Ask me anything about building permits, business licenses, zoning, or the ZBA process in Boston. 🏗️</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="Ask a permit question…" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+<button class="chat-bubble" id="chat-bubble" onclick="toggleChat()" title="Ask a permit question">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+</body>
+</html>
