@@ -643,32 +643,32 @@ function switchTab(name,btn){
 }
 
 // ═══ SHARED AI CALL ═══
-const DENY_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code (all Articles), Massachusetts State Building Code (780 CMR 9th Edition), ISD permit procedures, the ZBA process, BPDA Article 80, and common denial reasons.
+const DENY_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code, 780 CMR, ISD procedures, and the ZBA process.
 
-Structure your response with these exact bold headers:
+Structure your response with these exact sections. Use ## for each section header.
 
-**VIOLATION CLASSIFICATION**
-Classify violation type(s) and severity: Minor (curable by redesign, no ZBA), Moderate (ZBA likely), or Major (variance with hardship required).
+## Violation Classification
+Classify each violation as Minor, Moderate, or Major with a brief explanation.
 
-**CAN THIS BE CURED WITHOUT ZBA?**
-Direct yes or no with exact explanation. If yes: specific design changes. If no: why variance/special permit is required.
+## Can This Be Cured Without ZBA?
+Direct yes or no with specific reasoning.
 
-**RELIEF NEEDED (if ZBA required)**
-Type: Variance (dimensional), Special Permit, or Conditional Use Permit. Name the specific Boston Zoning Code article.
+## Relief Needed
+Type of relief required and relevant code articles.
 
-**ACTION PLAN**
-Numbered concrete steps. Include 45-day deadline, fees ($150 flat for ≤3-unit residential; $150 per violation for others), and permitsonline.boston.gov.
+## Approval Likelihood
+Start this section with a clear percentage like "**Approval Likelihood: 75%**" followed by 2-3 sentences explaining the key factors affecting this estimate.
 
-**DRAFT APPEAL LANGUAGE**
-A paragraph the applicant can use verbatim for their ZBA filing.
+## Action Plan
+Numbered steps the applicant should take immediately.
 
-**DOCUMENTS TO GATHER NOW**
-Bulleted list specific to this denial type.
+## Draft Appeal Language
+A short paragraph the applicant can use verbatim in their ZBA filing.
 
-**LIKELIHOOD ASSESSMENT**
-Honest 1-2 sentences on success probability and key factors.
+## Documents to Gather
+A bulleted list of required documents specific to this denial.
 
-Be practical, cite specific Boston Zoning Code articles or 780 CMR sections, flag when attorney/architect is strongly recommended. Format your response cleanly using **bold** for headers and numbered lists for steps. Avoid raw markdown symbols appearing as text.`;
+Be practical and specific. Cite Boston Zoning Code articles. Flag when an attorney or architect is strongly recommended.\`;
 
 const NP_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code, ISD procedures, and 780 CMR.
 
@@ -701,41 +701,60 @@ Top 2-3 things that could derail this specific project type in Boston.
 Be specific, cite Boston Zoning Code articles where relevant. Format your response cleanly using **bold** for headers and numbered lists for steps. Avoid raw markdown symbols appearing as text.`;
 
 function fmt(raw){
-  return raw
-    // Headers: ## Header → styled div
-    .replace(/^#{1,3}\s+(.+)$/gm,'<div style="font-family:\'DM Serif Display\',serif;font-size:17px;color:var(--bb);margin:1.25rem 0 0.5rem;border-bottom:1px solid var(--bd);padding-bottom:6px;">$1</div>')
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    // Blockquotes: > text
+  if(!raw) return '';
+  let s = raw
+    // Remove leading/trailing whitespace per line
+    .split('\n').map(l=>l.trim()).join('\n')
+    // H3 ### 
+    .replace(/^###\s+(.+)$/gm,'<h4 style="color:var(--bb);font-family:\'DM Serif Display\',serif;font-size:15px;margin:1rem 0 0.4rem;">$1</h4>')
+    // H2 ##
+    .replace(/^##\s+(.+)$/gm,'<h3 style="color:var(--bb);font-family:\'DM Serif Display\',serif;font-size:17px;margin:1.2rem 0 0.5rem;border-bottom:1px solid var(--bd);padding-bottom:6px;">$1</h3>')
+    // H1 #
+    .replace(/^#\s+(.+)$/gm,'<h2 style="color:var(--bb);font-family:\'DM Serif Display\',serif;font-size:20px;margin:1.2rem 0 0.5rem;">$1</h2>')
+    // Blockquote
     .replace(/^>\s*(.+)$/gm,'<div style="border-left:3px solid var(--bg);padding:8px 12px;background:var(--wnb);color:var(--wn);border-radius:0 6px 6px 0;margin:8px 0;font-size:13px;">$1</div>')
-    // Numbered lists
-    .replace(/^(\d+)\.\s(.+)$/gm,'<div style="display:flex;gap:8px;margin:4px 0;"><strong style="color:var(--bb);min-width:18px;">$1.</strong><span>$2</span></div>')
-    // Bullet lists
-    .replace(/^[•\-\*]\s(.+)$/gm,'<div style="display:flex;gap:8px;margin:3px 0;"><span style="color:var(--bb);">•</span><span>$1</span></div>')
-    // Horizontal rules
+    // Bold
+    .replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--bb);">$1</strong>')
+    // Italic
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    // HR
     .replace(/^---+$/gm,'<hr style="border:none;border-top:1px solid var(--bd);margin:1rem 0;">')
-    // Tables (basic): | col | col |
-    .replace(/^\|(.+)\|$/gm, (match, inner) => {
-      const cells = inner.split('|').map(c => c.trim());
-      const isHeader = match.includes('---');
-      if(isHeader) return '';
-      const tag = 'td';
-      return '<tr>' + cells.map(c => `<${tag} style="padding:7px 12px;border-bottom:1px solid var(--bd);font-size:13px;">${c}</${tag}>`).join('') + '</tr>';
-    })
-    // Wrap table rows
-    .replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:1rem 0;background:#fff;border:1px solid var(--bd);border-radius:8px;overflow:hidden;">$1</table>')
-    // Double newlines → paragraph break
-    .replace(/\n\n/g,'<br><br>')
+    // Numbered list
+    .replace(/^(\d+)\.\s(.+)$/gm,'<div style="display:flex;gap:10px;margin:5px 0;align-items:flex-start;"><span style="background:var(--bb);color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;">$1</span><span>$2</span></div>')
+    // Bullet list
+    .replace(/^[-•*]\s(.+)$/gm,'<div style="display:flex;gap:8px;margin:4px 0;align-items:flex-start;"><span style="color:var(--bg);font-weight:700;flex-shrink:0;margin-top:2px;">•</span><span>$1</span></div>')
+    // Double newline = paragraph gap
+    .replace(/\n\n/g,'</p><p style="margin:0.5rem 0;">')
     .replace(/\n/g,'<br>');
+  return '<p style="margin:0;">'+s+'</p>';
 }
 
 function loadingHtml(title,sub){
   return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${sub}</div></div></div><div class="loading-s"><div class="spinner"></div><div class="loading-t">Analyzing against <strong>Boston Zoning Code</strong> and ISD requirements…</div></div></div>`;
 }
 
+function extractLikelihood(body){
+  const m = body.match(/Approval Likelihood[:\s]*([\d]+)%/i);
+  return m ? parseInt(m[1]) : null;
+}
+function likelihoodBar(pct){
+  if(!pct) return '';
+  const color = pct>=70?'var(--ok)':pct>=45?'var(--bg)':'var(--er)';
+  const label = pct>=70?'Good odds':'Moderate odds — strong prep needed';
+  return `<div style="padding:14px 20px;background:#f8f9fc;border-bottom:1px solid var(--bd);">
+    <div style="display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;">
+      <span style="font-weight:600;color:var(--t1);">Approval Likelihood</span>
+      <span style="font-weight:700;color:${color};">${pct}% — ${label}</span>
+    </div>
+    <div style="height:8px;background:var(--bd);border-radius:4px;overflow:hidden;">
+      <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width 0.6s ease;"></div>
+    </div>
+  </div>`;
+}
 function resultHtml(title,meta,body,actions){
   const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div><div class="rbody" id="report-body">${fmt(body)}</div><div class="ract">${actions}</div></div>`;
+  const pct=extractLikelihood(body);
+  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>${likelihoodBar(pct)}<div class="rbody" id="report-body">${fmt(body)}</div><div class="ract">${actions}</div></div>`;
 }
 
 // ═══ NEW PERMIT ═══
@@ -938,7 +957,14 @@ function resetChecklist(){
   document.getElementById('prog-lbl').textContent='0 of 12 complete';
   document.getElementById('prog-fill').style.width='0%';
 }
-function followUp(t){if(typeof sendPrompt==='function')sendPrompt(t);}
+function followUp(t){
+  // Open chatbot and send the follow-up question
+  if(!chatOpen) toggleChat();
+  setTimeout(()=>{
+    document.getElementById('chat-input').value=t;
+    sendChat();
+  }, 300);
+}
 
 // ═══ CHATBOT ═══
 let chatOpen=false;
