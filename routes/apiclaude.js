@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
       "https://api.anthropic.com/v1/messages",
       {
         model: "claude-sonnet-4-6",
-        max_tokens: 1000,
+        max_tokens: 2000,
         system,
         messages
       },
