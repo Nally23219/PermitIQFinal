@@ -674,6 +674,42 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 
 </div>
 
+
+  <!-- CASE LOOKUP PANEL -->
+  <div class="panel" id="panel-caselookup" role="tabpanel">
+    <div class="card">
+      <div class="card-hd">
+        <div>
+          <div class="card-title">BOA / ISD Case Lookup</div>
+          <div class="card-sub">Enter any Boston case or permit number to see its type, status guidance, and where to track it</div>
+        </div>
+        <span class="cbadge cb-blue">Live</span>
+      </div>
+      <div class="callout co-blue" style="margin-bottom:1.25rem;">
+        <div class="co-icon">ℹ️</div>
+        <div>Enter a BOA case number (e.g. <strong>BOA-1542657</strong>) or ISD permit number (e.g. <strong>ERT-1526697</strong>). PermitIQ will identify the case type, explain what it means, and tell you exactly where to track its status.</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:1.25rem;">
+        <input type="text" id="case-input" placeholder="e.g. BOA-1542657 or ERT-1526697" style="flex:1;font-size:15px;" onkeydown="if(event.key==='Enter')lookupCase()">
+        <button class="btn btn-p" id="case-btn" onclick="lookupCase()" style="white-space:nowrap;min-width:100px;">Look Up</button>
+      </div>
+      <div id="case-result"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Common Boston Case Number Formats</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="zoning-cell"><div class="zoning-cell-label">BOA-XXXXXXX</div><div style="font-size:12px;color:var(--t2);margin-top:4px;">Board of Appeal — zoning variance or special permit</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">ERT-XXXXXXX</div><div style="font-size:12px;color:var(--t2);margin-top:4px;">ISD permit — building, electrical, or trade permit</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">ALT-XXXXXXX</div><div style="font-size:12px;color:var(--t2);margin-top:4px;">Alteration permit — renovations or additions</div></div>
+        <div class="zoning-cell"><div class="zoning-cell-label">SF-XXXXXXX</div><div style="font-size:12px;color:var(--t2);margin-top:4px;">Short form — minor work, no plan review required</div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:8px;">
+        <a class="btn btn-o btn-sm" href="https://permitsonline.boston.gov" target="_blank">Boston Permits Online ↗</a>
+        <a class="btn btn-o btn-sm" href="https://www.boston.gov/departments/inspectional-services" target="_blank">ISD Boston ↗</a>
+      </div>
+    </div>
+  </div>
+
 <!-- DASHBOARD PAGE (hidden by default, accessed via /dashboard) -->
 <div id="dashboard-page" style="display:none;max-width:960px;margin:2rem auto;padding:0 1.5rem;">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
