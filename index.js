@@ -10,6 +10,10 @@ import chatRoute from "./routes/chat.js";
 import apiClaudeRoute from "./routes/apiclaude.js";
 import redlineRoute from "./routes/redline.js";
 import appeaLetterRoute from "./routes/appealetter.js";
+import reportsRoute from "./routes/reports.js";
+import feedbackRoute from "./routes/feedback.js";
+import dashboardRoute from "./routes/dashboard.js";
+import zoningRoute from "./routes/zoning.js";
 
 dotenv.config();
 
@@ -25,6 +29,10 @@ app.use("/chat", chatRoute);
 app.use("/api/claude", apiClaudeRoute);
 app.use("/api/redline", redlineRoute);
 app.use("/api/appeal-letter", appeaLetterRoute);
+app.use("/api/reports", reportsRoute);
+app.use("/api/feedback", feedbackRoute);
+app.use("/api/dashboard", dashboardRoute);
+app.use("/api/zoning", zoningRoute);
 
 app.use(express.static(path.join(__dirname, "client/public")));
 app.get("*", (req, res) => {
