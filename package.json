@@ -1,13 +1,12 @@
 {
-  "name": "permitiq-server",
+  "name": "render-anthropic-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "echo \"No build step needed\""
+    "start": "node src/index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "@anthropic-ai/sdk": "^0.32.0"
   }
 }
