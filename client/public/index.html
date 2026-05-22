@@ -43,7 +43,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bc);color:var(--t1);min-h
 /* MAIN */
 .main{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem;}
 /* TABS - 5 columns */
-.mtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:2rem;}
+.mtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:2rem;}
 .mtab{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1rem 0.75rem;cursor:pointer;transition:all 0.18s;text-align:left;display:flex;flex-direction:column;gap:5px;}
 .mtab:hover{border-color:var(--bb);box-shadow:var(--sh);transform:translateY(-1px);}
 .mtab.active{background:var(--bb);border-color:var(--bb);box-shadow:var(--shl);}
@@ -364,6 +364,11 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
       <div class="mtab-lbl">ZBA Appeal Guide</div>
       <div class="mtab-sub">Step-by-step hearing roadmap</div>
     </button>
+    <button class="mtab" onclick="switchTab('caselookup',this)" role="tab">
+      <div class="mtab-icon">🔎</div>
+      <div class="mtab-lbl">Case Lookup</div>
+      <div class="mtab-sub">BOA & ISD case status</div>
+    </button>
   </div>
 
   <!-- ══════════ NEW PERMIT PANEL ══════════ -->
@@ -658,19 +663,6 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
         <div class="tls"><div class="tl-left"><div class="tl-num">5</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">ZBA public hearing</div><div class="tl-body">Weekly hearings. You or a representative (attorney, architect, contractor) must appear. Bring: revised plans, photos, tax bill, neighbor petitions, and hardship documentation for variances.</div><div class="tl-tip">⚖️ Variance = unique physical hardship specific to your property. Special permit = lower standard.</div></div></div>
         <div class="tls"><div class="tl-left"><div class="tl-num">6</div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">ZBA decision &amp; finalization</div><div class="tl-body">Meet every condition before ISD issues the final permit. "Dismissed without prejudice" lets you refile sooner than the 1-year wait. Track your case at boston.gov ZBA decisions page.</div></div></div>
       </div>
-      <!-- Case Number Lookup -->
-      <div class="card" style="margin-top:1.5rem;">
-        <div class="card-hd">
-          <div><div class="card-title">BOA / ISD Case Lookup</div><div class="card-sub">Enter a case number to see its type, status guidance, and where to track it</div></div>
-          <span class="cbadge cb-blue">Live</span>
-        </div>
-        <div style="display:flex;gap:10px;margin-bottom:1rem;">
-          <input type="text" id="case-input" placeholder="e.g. BOA-1542657 or ERT-1526697" style="flex:1;" onkeydown="if(event.key==='Enter')lookupCase()">
-          <button class="btn btn-p" id="case-btn" onclick="lookupCase()" style="white-space:nowrap;">Look Up</button>
-        </div>
-        <div id="case-result"></div>
-      </div>
-
       <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-p btn-sm" onclick="followUp('Give me 5 specific strategies to improve my ZBA approval odds at a Boston hearing, including neighbor outreach, presentation tips, and documentation.')">✨ Get AI Hearing Strategies</button>
         <a class="btn btn-o btn-sm" href="https://www.boston.gov/departments/inspectional-services/how-file-appeal-zoning-board" target="_blank">Official ZBA Filing ↗</a>
