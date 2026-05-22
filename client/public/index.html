@@ -668,7 +668,7 @@ Bulleted list specific to this denial type.
 **LIKELIHOOD ASSESSMENT**
 Honest 1-2 sentences on success probability and key factors.
 
-Be practical, cite specific Boston Zoning Code articles or 780 CMR sections, flag when attorney/architect is strongly recommended.`;
+Be practical, cite specific Boston Zoning Code articles or 780 CMR sections, flag when attorney/architect is strongly recommended. Format your response cleanly using **bold** for headers and numbered lists for steps. Avoid raw markdown symbols appearing as text.`;
 
 const NP_SYS=`You are PermitIQ, an expert AI advisor for the City of Boston's Inspectional Services Department (ISD). You have deep expertise in the Boston Zoning Code, ISD procedures, and 780 CMR.
 
@@ -698,13 +698,33 @@ Numbered list of exactly what to do first, including verifying zoning on bostonp
 **WATCH OUT FOR**
 Top 2-3 things that could derail this specific project type in Boston.
 
-Be specific, cite Boston Zoning Code articles where relevant.`;
+Be specific, cite Boston Zoning Code articles where relevant. Format your response cleanly using **bold** for headers and numbered lists for steps. Avoid raw markdown symbols appearing as text.`;
 
 function fmt(raw){
   return raw
+    // Headers: ## Header → styled div
+    .replace(/^#{1,3}\s+(.+)$/gm,'<div style="font-family:\'DM Serif Display\',serif;font-size:17px;color:var(--bb);margin:1.25rem 0 0.5rem;border-bottom:1px solid var(--bd);padding-bottom:6px;">$1</div>')
+    // Bold
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/^(\d+)\.\s(.+)$/gm,'<br><strong style="color:var(--bb)">$1.</strong> $2')
-    .replace(/^[•\-]\s(.+)$/gm,'<br>• $1')
+    // Blockquotes: > text
+    .replace(/^>\s*(.+)$/gm,'<div style="border-left:3px solid var(--bg);padding:8px 12px;background:var(--wnb);color:var(--wn);border-radius:0 6px 6px 0;margin:8px 0;font-size:13px;">$1</div>')
+    // Numbered lists
+    .replace(/^(\d+)\.\s(.+)$/gm,'<div style="display:flex;gap:8px;margin:4px 0;"><strong style="color:var(--bb);min-width:18px;">$1.</strong><span>$2</span></div>')
+    // Bullet lists
+    .replace(/^[•\-\*]\s(.+)$/gm,'<div style="display:flex;gap:8px;margin:3px 0;"><span style="color:var(--bb);">•</span><span>$1</span></div>')
+    // Horizontal rules
+    .replace(/^---+$/gm,'<hr style="border:none;border-top:1px solid var(--bd);margin:1rem 0;">')
+    // Tables (basic): | col | col |
+    .replace(/^\|(.+)\|$/gm, (match, inner) => {
+      const cells = inner.split('|').map(c => c.trim());
+      const isHeader = match.includes('---');
+      if(isHeader) return '';
+      const tag = 'td';
+      return '<tr>' + cells.map(c => `<${tag} style="padding:7px 12px;border-bottom:1px solid var(--bd);font-size:13px;">${c}</${tag}>`).join('') + '</tr>';
+    })
+    // Wrap table rows
+    .replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:1rem 0;background:#fff;border:1px solid var(--bd);border-radius:8px;overflow:hidden;">$1</table>')
+    // Double newlines → paragraph break
     .replace(/\n\n/g,'<br><br>')
     .replace(/\n/g,'<br>');
 }
