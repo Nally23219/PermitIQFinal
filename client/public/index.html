@@ -1082,7 +1082,7 @@ async function runAnalysis(){
     sessionCount++;
     document.getElementById('m-count').textContent=sessionCount;
     document.getElementById('result-area').innerHTML=resultHtml('Action Plan Generated','Boston Zoning Code + 780 CMR',raw,
-      `<button class="btn btn-p btn-sm" onclick="followUp('Help me draft a full formal ZBA appeal letter based on this denial analysis.')">Draft full appeal letter ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What neighbor outreach strategy should I use for my Boston ZBA hearing?')">Neighbor strategy ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What should I bring to my ZBA hearing and how should I present my case?')">Hearing prep ↗</button><button class="btn btn-g btn-sm" id="da-redline-btn" onclick="downloadRedlinedPlans('da')" style="display:none;">📐 Download Redlined Plans</button><button class="btn btn-o btn-sm" onclick="window.print()">Print 🖨</button>`);
+      `<button class="btn btn-p btn-sm" id="da-appeal-btn" onclick="downloadAppealLetter()">Download ZBA Appeal Letter</button><button class="btn btn-o btn-sm" onclick="followUp('What neighbor outreach strategy should I use for my Boston ZBA hearing?')">Neighbor strategy ↗</button><button class="btn btn-o btn-sm" onclick="followUp('What should I bring to my ZBA hearing and how should I present my case?')">Hearing prep ↗</button><button class="btn btn-g btn-sm" id="da-redline-btn" onclick="downloadRedlinedPlans('da')" style="display:none;">📐 Download Redlined Plans</button><button class="btn btn-o btn-sm" onclick="window.print()">Print 🖨</button>`);
     window._lastDAAnalysis = raw;
     window._lastDAFiles = [...(uploadedFiles['da-plans']||[]),...(uploadedFiles['da-denial']||[])];
     const daFiles=[...(uploadedFiles['da-denial']||[]),...(uploadedFiles['da-plans']||[])];
@@ -1110,6 +1110,45 @@ function resetChecklist(){
   document.getElementById('prog-lbl').textContent='0 of 12 complete';
   document.getElementById('prog-fill').style.width='0%';
 }
+async function downloadAppealLetter(){
+  if(!window._lastDAAnalysis){
+    alert('Please run an analysis first before generating an appeal letter.');
+    return;
+  }
+  const btn = document.getElementById('da-appeal-btn');
+  const origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'Generating letter...';
+  try {
+    const r = await fetch('/api/appeal-letter', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        analysis: window._lastDAAnalysis,
+        projType: document.getElementById('proj-type')?.value || '',
+        neighborhood: document.getElementById('hood')?.value || '',
+        denial: document.getElementById('denial-in')?.value || ''
+      })
+    });
+    if(!r.ok){
+      const err = await r.json().catch(()=>({error:'Server error'}));
+      throw new Error(err.error || 'Server error');
+    }
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'PermitIQ_ZBA_Appeal_Letter.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('Error generating appeal letter: ' + e.message);
+    console.error(e);
+  }
+  btn.disabled = false;
+  btn.innerHTML = origText;
+}
+
 async function downloadRedlinedPlans(source){
   const analysis = source==='np' ? window._lastNPAnalysis : window._lastDAAnalysis;
   const files = source==='np' ? (window._lastNPFiles||[]) : (window._lastDAFiles||[]);
