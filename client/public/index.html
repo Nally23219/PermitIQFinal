@@ -1106,6 +1106,9 @@ async function runNewPermit(){
   try{
     const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:(window._langInstruction||'')+NP_SYS,messages:[{role:'user',content:msg}]})});
     const d=await r.json();
+    if(d.error){
+      throw new Error(d.error.message || JSON.stringify(d.error));
+    }
     const raw=d.content?.map(b=>b.text||'').join('')||'No response.';
     document.getElementById('np-result').innerHTML=resultHtml('Project Permit Analysis','Boston Zoning Code + 780 CMR',raw,
       `<button class="btn btn-p btn-sm" onclick="switchTab('checklist',document.querySelectorAll('.mtab')[3])">Go to pre-submit checklist →</button><button class="btn btn-g btn-sm" id="np-redline-btn" onclick="downloadRedlinedPlans('np')" style="display:none;">📐 Download Redlined Plans</button><button class="btn btn-o btn-sm" onclick="window.print()">Print / Save PDF 🖨</button>`);
