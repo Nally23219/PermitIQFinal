@@ -24,7 +24,7 @@ const PUBLIC = path.join(__dirname, "client/public");
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: "25mb" }));
+app.use(express.json({ limit: "50mb" }));
 
 app.use("/upload", uploadRoute);
 app.use("/claude", claudeRoute);
