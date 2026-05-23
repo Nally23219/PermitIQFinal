@@ -7,9 +7,13 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
-// Create a Stripe checkout session
 router.post("/create-checkout", async (req, res) => {
   const { reportId, reportType } = req.body;
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: "Stripe not configured" });
+  }
+
   const stripe = getStripe();
 
   try {
@@ -20,19 +24,18 @@ router.post("/create-checkout", async (req, res) => {
         quantity: 1,
       }],
       mode: "payment",
-      success_url: `https://permit-iq.us/app?report=${reportId}&unlocked=true`,
-      cancel_url: `https://permit-iq.us/app?report=${reportId}&cancelled=true`,
-      metadata: { reportId, reportType }
+      success_url: `https://permit-iq.us/app?report=${reportId}&unlocked=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://permit-iq.us/app?cancelled=true`,
+      metadata: { reportId: reportId || "unknown", reportType: reportType || "analysis" }
     });
 
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
-    console.error("Stripe error:", err);
+    console.error("Stripe checkout error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-// Verify a payment was completed
 router.get("/verify/:sessionId", async (req, res) => {
   const stripe = getStripe();
   try {
