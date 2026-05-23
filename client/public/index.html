@@ -1242,28 +1242,21 @@ function resultHtml(title, meta, body, actions){
   _currentReportId = rid;
   _currentRawBody = body;
 
-  // Split into sections - try ## headers first, fall back to double newlines
+  // Split into sections
   let sections = cleanBody.split(/(?=## )/).filter(s => s.trim());
-  if(sections.length < 2){
-    sections = cleanBody.split(/(?=\*\*[A-Z])/).filter(s => s.trim());
-  }
+  if(sections.length < 2) sections = cleanBody.split(/(?=\*\*[A-Z])/).filter(s => s.trim());
   if(sections.length < 2){
     const paras = cleanBody.split(/\n\n+/).filter(s => s.trim().length > 50);
     if(paras.length >= 4) sections = paras;
   }
-  // Only show first section (1 suggestion/section) before paywall
-  const teaserSections = sections.slice(0,1);
-  const hasMultipleSections = sections.length >= 2 && cleanBody.length > 400;
 
   const isUnlocked = _unlockedReports.has(rid);
+  if(isUnlocked) return fullReport(rid, title, meta, now, body, cleanBody, actions);
 
-  if(isUnlocked){
-    return fullReport(rid, title, meta, now, body, cleanBody, actions);
-  }
+  const hasMultipleSections = sections.length >= 2 && cleanBody.length > 400;
 
   if(hasMultipleSections){
-    // Show first section only as teaser
-    const teaser = teaserSections.join('\n');
+    const teaser = sections[0]; // Show only the first section
     return `<div class="rwrap" style="margin-top:1.25rem;">
       <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>
       ${likelihoodSection(body)}
