@@ -3,48 +3,50 @@ import Stripe from "stripe";
 
 const router = express.Router();
 
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY);
-}
-
 router.post("/create-checkout", async (req, res) => {
   const { reportId, reportType } = req.body;
 
   if (!process.env.STRIPE_SECRET_KEY) {
-    return res.status(500).json({ error: "Stripe not configured" });
+    return res.status(500).json({ error: "STRIPE_SECRET_KEY not set in environment" });
+  }
+  if (!process.env.STRIPE_PRICE_ID) {
+    return res.status(500).json({ error: "STRIPE_PRICE_ID not set in environment" });
   }
 
-  const stripe = getStripe();
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: [{
-        price: process.env.STRIPE_PRICE_ID,
-        quantity: 1,
-      }],
+      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
       mode: "payment",
-      success_url: `https://permit-iq.us/app?report=${reportId}&unlocked=true&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `https://permit-iq.us/app?report=${reportId}&unlocked=true`,
       cancel_url: `https://permit-iq.us/app?cancelled=true`,
-      metadata: { reportId: reportId || "unknown", reportType: reportType || "analysis" }
+      metadata: {
+        reportId: reportId || "unknown",
+        reportType: reportType || "analysis"
+      }
     });
 
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
-    console.error("Stripe checkout error:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("Stripe error:", err.message, err.type, err.code);
+    res.status(500).json({
+      error: err.message,
+      type: err.type,
+      code: err.code
+    });
   }
 });
 
 router.get("/verify/:sessionId", async (req, res) => {
-  const stripe = getStripe();
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const session = await stripe.checkout.sessions.retrieve(req.params.sessionId);
-    if (session.payment_status === "paid") {
-      res.json({ paid: true, reportId: session.metadata.reportId });
-    } else {
-      res.json({ paid: false });
-    }
+    res.json({
+      paid: session.payment_status === "paid",
+      reportId: session.metadata?.reportId
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
