@@ -969,6 +969,7 @@ function likelihoodSection(body){
   </div>`;
 }
 let _currentReportId = null;
+let _currentRawBody = '';
 let _unlockedReports = new Set(JSON.parse(sessionStorage.getItem('piq_unlocked')||'[]'));
 
 function saveUnlocked(rid){
@@ -981,66 +982,67 @@ function resultHtml(title, meta, body, actions){
   const cleanBody = body.replace(/CURRENT_ODDS:\s*\d+%\n?/gi,'').replace(/REVISED_ODDS:\s*\d+%\n?/gi,'');
   const rid = 'r_'+Math.random().toString(36).slice(2,9);
   _currentReportId = rid;
+  _currentRawBody = body;
+
+  // Split into sections
+  const sections = cleanBody.split(/(?=## )/).filter(s => s.trim());
+  const hasMultipleSections = sections.length > 2;
+
   const isUnlocked = _unlockedReports.has(rid);
 
-  // Check URL params for returning from Stripe
-  const urlParams = new URLSearchParams(window.location.search);
-  const urlReport = urlParams.get('report');
-  const urlUnlocked = urlParams.get('unlocked');
-  if(urlReport && urlUnlocked === 'true') {
-    saveUnlocked(urlReport);
-    // Clean URL
-    window.history.replaceState({}, '', '/app');
+  if(isUnlocked){
+    return fullReport(rid, title, meta, now, body, cleanBody, actions);
   }
 
-  const formattedBody = fmt(cleanBody);
-
-  if(isUnlocked || (urlReport === rid && urlUnlocked === 'true')){
-    // Full report
+  if(hasMultipleSections){
+    // Show first 2 sections as teaser
+    const teaser = sections.slice(0,2).join('\n');
     return `<div class="rwrap" style="margin-top:1.25rem;">
-      <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">✓ Unlocked</span></div>
+      <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>
       ${likelihoodSection(body)}
-      <div class="rbody" id="report-body">${formattedBody}</div>
-      <div class="ract">${actions}</div>
-      <div class="feedback-row"><span>Was this analysis helpful?</span><button class="fb-btn" id="fb-up-${rid}" onclick="submitFeedback('up','${rid}')">👍</button><button class="fb-btn" id="fb-dn-${rid}" onclick="submitFeedback('down','${rid}')">👎</button><button class="btn btn-o btn-sm" style="margin-left:auto;font-size:11px;" onclick="shareReport('${rid}')">🔗 Share</button></div>
+      <div style="padding:10px 16px;background:#fef9ec;border-bottom:1px solid #fde68a;font-size:12px;color:#92400e;">
+        <strong>Free preview</strong> — showing 2 of ${sections.length} sections
+      </div>
+      <div class="rbody">${fmt(teaser)}</div>
+      <div class="paywall-wrap">
+        <div class="paywall-gate" style="position:relative;background:linear-gradient(to bottom,transparent,#fff 30%);padding-top:60px;">
+          <div class="paywall-card">
+            <div class="paywall-icon">🔓</div>
+            <div class="paywall-title">Unlock Your Full Report</div>
+            <div class="paywall-sub">You're seeing 2 of ${sections.length} sections. Unlock the complete analysis for a one-time payment.</div>
+            <div class="paywall-features">
+              <div class="paywall-feature"><span>✓</span> Full violation breakdown with exact code citations</div>
+              <div class="paywall-feature"><span>✓</span> Complete ZBA action plan with deadlines & fees</div>
+              <div class="paywall-feature"><span>✓</span> Plan review & specific drawing edits needed</div>
+              <div class="paywall-feature"><span>✓</span> Hardship arguments for your hearing</div>
+              <div class="paywall-feature"><span>✓</span> Draft ZBA appeal letter — download instantly</div>
+              <div class="paywall-feature"><span>✓</span> Downloadable redlined plans PDF</div>
+            </div>
+            <button class="paywall-btn" onclick="unlockReport('${rid}')">Unlock Full Report — $39.99</button>
+            <div class="paywall-note">One-time payment · Secure checkout via Stripe · Instant access</div>
+          </div>
+        </div>
+      </div>
     </div>`;
   }
 
-  // Teaser — show first 2 sections only, then paywall
-  const sections = cleanBody.split(/(?=^## )/m).filter(s => s.trim());
-  const teaserSections = sections.length > 1 ? sections.slice(0,2) : [cleanBody];
-  const teaser = teaserSections.join('\n');
+  // Short response - show in full
+  return fullReport(rid, title, meta, now, body, cleanBody, actions);
+}
 
+function fullReport(rid, title, meta, now, body, cleanBody, actions){
   return `<div class="rwrap" style="margin-top:1.25rem;">
-    <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>
+    <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">✓ Unlocked</span></div>
     ${likelihoodSection(body)}
-    <div class="teaser-badge">Free preview — ${teaserSections.length} of ${sections.length > 1 ? sections.length : 'several'} sections shown</div>
-    <div class="paywall-wrap">
-      <div class="paywall-blur rbody">${fmt(teaser)}</div>
-      <div class="paywall-gate">
-        <div class="paywall-card">
-          <div class="paywall-icon">🔓</div>
-          <div class="paywall-title">Unlock Your Full Report</div>
-          <div class="paywall-sub">You're seeing a preview of your analysis. Unlock the complete report for a one-time payment.</div>
-          <div class="paywall-features">
-            <div class="paywall-feature"><span>✓</span> Full violation breakdown with exact code citations</div>
-            <div class="paywall-feature"><span>✓</span> Complete ZBA action plan with deadlines & fees</div>
-            <div class="paywall-feature"><span>✓</span> Plan review & specific drawing edits needed</div>
-            <div class="paywall-feature"><span>✓</span> Hardship arguments for your hearing</div>
-            <div class="paywall-feature"><span>✓</span> Draft ZBA appeal letter — download instantly</div>
-            <div class="paywall-feature"><span>✓</span> Downloadable redlined plans PDF</div>
-          </div>
-          <button class="paywall-btn" onclick="unlockReport('${rid}')">Unlock Full Report — $39.99</button>
-          <div class="paywall-note">One-time payment · Secure checkout via Stripe · Instant access</div>
-        </div>
-      </div>
-    </div>
+    <div class="rbody" id="report-body">${fmt(cleanBody)}</div>
+    <div class="ract">${actions}</div>
+    <div class="feedback-row"><span>Was this analysis helpful?</span><button class="fb-btn" id="fb-up-${rid}" onclick="submitFeedback('up','${rid}')">👍</button><button class="fb-btn" id="fb-dn-${rid}" onclick="submitFeedback('down','${rid}')">👎</button><button class="btn btn-o btn-sm" style="margin-left:auto;font-size:11px;" onclick="shareReport('${rid}')">🔗 Share</button></div>
   </div>`;
 }
 
 async function unlockReport(rid){
+  const btn = document.querySelector('.paywall-btn');
   try {
-    const btn = document.querySelector('.paywall-btn');
     if(btn){ btn.disabled=true; btn.textContent='Redirecting to checkout…'; }
     const r = await fetch('/api/stripe/create-checkout', {
       method: 'POST',
@@ -1049,18 +1051,15 @@ async function unlockReport(rid){
     });
     const d = await r.json();
     if(d.url){
-      // Store current analysis so we can restore it after payment
-      sessionStorage.setItem('piq_pending_report_'+rid, JSON.stringify({
-        title: document.querySelector('.rhd-title')?.textContent || 'Analysis',
-        body: window._lastDAAnalysis || window._lastNPAnalysis || ''
-      }));
       window.location.href = d.url;
     } else {
-      alert('Could not start checkout. Please try again.');
+      const msg = d.error || d.type || 'Unknown error';
+      alert('Checkout error: ' + msg);
       if(btn){ btn.disabled=false; btn.textContent='Unlock Full Report — $39.99'; }
     }
   } catch(e){
     alert('Checkout error: '+e.message);
+    if(btn){ btn.disabled=false; btn.textContent='Unlock Full Report — $39.99'; }
   }
 }
 
