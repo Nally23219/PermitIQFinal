@@ -607,7 +607,7 @@ select{cursor:pointer;}
 
 <div class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-eyebrow"><span class="hero-dot"></span>Boston Inspectional Services · AI-Powered</div>
+  <div class="hero-eyebrow hero-tag"><span class="hero-dot"></span>Boston Inspectional Services · AI-Powered</div>
   <h1>Faster permits.<br><em>Fewer denials.</em></h1>
   <p class="hero-desc">AI-guided permitting built on Boston's Zoning Code, ISD requirements, and 780 CMR. Upload plans, analyze denials, prep your ZBA appeal — in seconds.</p>
 </div>
@@ -1809,9 +1809,12 @@ function setLang(lang){
   document.getElementById('lang-en').classList.toggle('active', lang==='en');
   document.getElementById('lang-es').classList.toggle('active', lang==='es');
   const t = TRANSLATIONS[lang];
-  document.querySelector('.hero-tag').textContent = t.hero_tag;
-  document.querySelector('.hero h1').innerHTML = t.hero_h1;
-  document.querySelector('.hero-desc').textContent = t.hero_desc;
+  const heroTag = document.querySelector('.hero-tag');
+  if(heroTag) heroTag.innerHTML = '<span class="hero-dot"></span>' + t.hero_tag;
+  const heroH1 = document.querySelector('.hero h1');
+  if(heroH1) heroH1.innerHTML = t.hero_h1;
+  const heroDesc = document.querySelector('.hero-desc');
+  if(heroDesc) heroDesc.textContent = t.hero_desc;
   const tabs = document.querySelectorAll('.mtab');
   if(tabs[0]){ tabs[0].querySelector('.mtab-lbl').textContent=t.tab1; tabs[0].querySelector('.mtab-sub').textContent=t.tab1sub; }
   if(tabs[1]){ tabs[1].querySelector('.mtab-lbl').textContent=t.tab2; tabs[1].querySelector('.mtab-sub').textContent=t.tab2sub; }
