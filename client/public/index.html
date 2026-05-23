@@ -1250,6 +1250,10 @@ function resultHtml(title, meta, body, actions){
     if(paras.length >= 4) sections = paras;
   }
 
+  console.log('DEBUG sections:', sections.length, 'body length:', cleanBody.length);
+  console.log('DEBUG first 200 chars:', cleanBody.substring(0,200));
+  console.log('DEBUG sections[0]:', sections[0]?.substring(0,100));
+
   const isUnlocked = _unlockedReports.has(rid);
   if(isUnlocked) return fullReport(rid, title, meta, now, body, cleanBody, actions);
 
