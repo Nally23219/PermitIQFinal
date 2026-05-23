@@ -984,9 +984,18 @@ function resultHtml(title, meta, body, actions){
   _currentReportId = rid;
   _currentRawBody = body;
 
-  // Split into sections
-  const sections = cleanBody.split(/(?=## )/).filter(s => s.trim());
-  const hasMultipleSections = sections.length > 2;
+  // Split into sections - try ## headers first, fall back to double newlines
+  let sections = cleanBody.split(/(?=## )/).filter(s => s.trim());
+  if(sections.length < 2){
+    // Claude may have used bold headers instead of ##
+    sections = cleanBody.split(/(?=\*\*[A-Z])/).filter(s => s.trim());
+  }
+  if(sections.length < 2){
+    // Fall back to paragraph splits for long responses
+    const paras = cleanBody.split(/\n\n+/).filter(s => s.trim().length > 50);
+    if(paras.length >= 4) sections = paras;
+  }
+  const hasMultipleSections = sections.length >= 2 && cleanBody.length > 400;
 
   const isUnlocked = _unlockedReports.has(rid);
 
