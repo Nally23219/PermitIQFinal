@@ -303,6 +303,22 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 .dash-bar-bg{flex:1;height:8px;background:var(--bd);border-radius:4px;overflow:hidden;}
 .dash-bar-fill{height:100%;background:var(--bb);border-radius:4px;}
 .dash-bar-count{font-size:11px;color:var(--t3);min-width:24px;}
+
+/* ── PAYWALL ── */
+.paywall-wrap{position:relative;margin-top:0;}
+.paywall-blur{filter:blur(4px);pointer-events:none;user-select:none;max-height:220px;overflow:hidden;opacity:0.6;}
+.paywall-gate{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to bottom,transparent,#fff 40%);padding-top:80px;padding-bottom:0;}
+.paywall-card{background:#fff;border:2px solid #1e6fff;border-radius:16px;padding:28px 24px;text-align:center;margin:0 auto;max-width:480px;box-shadow:0 8px 40px rgba(30,111,255,0.15);}
+.paywall-icon{font-size:36px;margin-bottom:10px;}
+.paywall-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--bb);margin-bottom:8px;}
+.paywall-sub{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px;}
+.paywall-features{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;text-align:left;}
+.paywall-feature{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t1);}
+.paywall-feature span{color:var(--ok);font-weight:700;}
+.paywall-btn{width:100%;padding:14px;font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--bb),#0050cc);color:white;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(30,111,255,0.35);transition:all 0.2s;margin-bottom:8px;}
+.paywall-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(30,111,255,0.45);}
+.paywall-note{font-size:11px;color:var(--t3);}
+.teaser-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;background:#fef3e2;color:#854F0B;margin-bottom:10px;}
 </style>
 </head>
 <body>
@@ -953,12 +969,98 @@ function likelihoodSection(body){
   </div>`;
 }
 let _currentReportId = null;
-function resultHtml(title,meta,body,actions){
-  const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+let _unlockedReports = new Set(JSON.parse(sessionStorage.getItem('piq_unlocked')||'[]'));
+
+function saveUnlocked(rid){
+  _unlockedReports.add(rid);
+  sessionStorage.setItem('piq_unlocked', JSON.stringify([..._unlockedReports]));
+}
+
+function resultHtml(title, meta, body, actions){
+  const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   const cleanBody = body.replace(/CURRENT_ODDS:\s*\d+%\n?/gi,'').replace(/REVISED_ODDS:\s*\d+%\n?/gi,'');
   const rid = 'r_'+Math.random().toString(36).slice(2,9);
   _currentReportId = rid;
-  return `<div class="rwrap" style="margin-top:1.25rem;"><div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>${likelihoodSection(body)}<div class="rbody" id="report-body">${fmt(cleanBody)}</div><div class="ract">${actions}</div><div class="feedback-row"><span>Was this analysis helpful?</span><button class="fb-btn" id="fb-up-${rid}" onclick="submitFeedback('up','${rid}')">👍</button><button class="fb-btn" id="fb-dn-${rid}" onclick="submitFeedback('down','${rid}')">👎</button><button class="btn btn-o btn-sm" style="margin-left:auto;font-size:11px;" onclick="shareReport('${rid}')">🔗 Share</button></div></div>`;
+  const isUnlocked = _unlockedReports.has(rid);
+
+  // Check URL params for returning from Stripe
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlReport = urlParams.get('report');
+  const urlUnlocked = urlParams.get('unlocked');
+  if(urlReport && urlUnlocked === 'true') {
+    saveUnlocked(urlReport);
+    // Clean URL
+    window.history.replaceState({}, '', '/app');
+  }
+
+  const formattedBody = fmt(cleanBody);
+
+  if(isUnlocked || (urlReport === rid && urlUnlocked === 'true')){
+    // Full report
+    return `<div class="rwrap" style="margin-top:1.25rem;">
+      <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">✓ Unlocked</span></div>
+      ${likelihoodSection(body)}
+      <div class="rbody" id="report-body">${formattedBody}</div>
+      <div class="ract">${actions}</div>
+      <div class="feedback-row"><span>Was this analysis helpful?</span><button class="fb-btn" id="fb-up-${rid}" onclick="submitFeedback('up','${rid}')">👍</button><button class="fb-btn" id="fb-dn-${rid}" onclick="submitFeedback('down','${rid}')">👎</button><button class="btn btn-o btn-sm" style="margin-left:auto;font-size:11px;" onclick="shareReport('${rid}')">🔗 Share</button></div>
+    </div>`;
+  }
+
+  // Teaser — show first 2 sections only, then paywall
+  const sections = cleanBody.split(/\n(?=##\s)/);
+  const teaser = sections.slice(0,2).join('\n');
+
+  return `<div class="rwrap" style="margin-top:1.25rem;">
+    <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>
+    ${likelihoodSection(body)}
+    <div class="teaser-badge">Free preview — 2 of ${sections.length} sections shown</div>
+    <div class="paywall-wrap">
+      <div class="paywall-blur rbody">${fmt(teaser)}</div>
+      <div class="paywall-gate">
+        <div class="paywall-card">
+          <div class="paywall-icon">🔓</div>
+          <div class="paywall-title">Unlock Your Full Report</div>
+          <div class="paywall-sub">You're seeing 2 of ${sections.length} sections. Unlock the complete analysis for a one-time payment.</div>
+          <div class="paywall-features">
+            <div class="paywall-feature"><span>✓</span> Full violation breakdown with exact code citations</div>
+            <div class="paywall-feature"><span>✓</span> Complete ZBA action plan with deadlines & fees</div>
+            <div class="paywall-feature"><span>✓</span> Plan review & specific drawing edits needed</div>
+            <div class="paywall-feature"><span>✓</span> Hardship arguments for your hearing</div>
+            <div class="paywall-feature"><span>✓</span> Draft ZBA appeal letter — download instantly</div>
+            <div class="paywall-feature"><span>✓</span> Downloadable redlined plans PDF</div>
+          </div>
+          <button class="paywall-btn" onclick="unlockReport('${rid}')">Unlock Full Report — $39.99</button>
+          <div class="paywall-note">One-time payment · Secure checkout via Stripe · Instant access</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function unlockReport(rid){
+  try {
+    const btn = document.querySelector('.paywall-btn');
+    if(btn){ btn.disabled=true; btn.textContent='Redirecting to checkout…'; }
+    const r = await fetch('/api/stripe/create-checkout', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ reportId: rid, reportType: 'analysis' })
+    });
+    const d = await r.json();
+    if(d.url){
+      // Store current analysis so we can restore it after payment
+      sessionStorage.setItem('piq_pending_report_'+rid, JSON.stringify({
+        title: document.querySelector('.rhd-title')?.textContent || 'Analysis',
+        body: window._lastDAAnalysis || window._lastNPAnalysis || ''
+      }));
+      window.location.href = d.url;
+    } else {
+      alert('Could not start checkout. Please try again.');
+      if(btn){ btn.disabled=false; btn.textContent='Unlock Full Report — $39.99'; }
+    }
+  } catch(e){
+    alert('Checkout error: '+e.message);
+  }
 }
 
 // ═══ NEW PERMIT ═══
@@ -1388,6 +1490,21 @@ document.addEventListener('DOMContentLoaded', function(){
   if(localStorage.getItem('piq_disclaimer')) {
     var m = document.getElementById('disclaimer-modal');
     if(m) m.style.display='none';
+  }
+  // Check if returning from Stripe payment
+  const urlParams = new URLSearchParams(window.location.search);
+  const rid = urlParams.get('report');
+  const unlocked = urlParams.get('unlocked');
+  const cancelled = urlParams.get('cancelled');
+  if(rid && unlocked === 'true'){
+    saveUnlocked(rid);
+    window.history.replaceState({}, '', '/app');
+    // Show success message
+    const toast = document.getElementById('share-toast');
+    if(toast){ toast.textContent='Payment successful! Your full report is unlocked.'; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),4000); }
+  }
+  if(cancelled){
+    window.history.replaceState({}, '', '/app');
   }
 });
 
