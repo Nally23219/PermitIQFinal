@@ -1116,8 +1116,8 @@ async function runNewPermit(){
       if(btn) btn.style.display='inline-flex';
     }
   }catch(e){
-    document.getElementById('np-result').innerHTML='<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Something went wrong processing your request. Please check your inputs and try again.</div></div>';
-    console.error('runNewPermit error:',e);
+    document.getElementById('np-result').innerHTML=`<div class="callout co-gold" style="margin-top:1rem;"><div class="co-icon">⚠️</div><div>Error: ${e.message}. Check the browser console (F12) for details.</div></div>`;
+    console.error('runNewPermit error:', e);
   }
   btn.disabled=false;btn.innerHTML='🏗️ Analyze My Project';
 }
