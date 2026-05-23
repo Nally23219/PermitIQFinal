@@ -1245,14 +1245,14 @@ function resultHtml(title, meta, body, actions){
   // Split into sections - try ## headers first, fall back to double newlines
   let sections = cleanBody.split(/(?=## )/).filter(s => s.trim());
   if(sections.length < 2){
-    // Claude may have used bold headers instead of ##
     sections = cleanBody.split(/(?=\*\*[A-Z])/).filter(s => s.trim());
   }
   if(sections.length < 2){
-    // Fall back to paragraph splits for long responses
     const paras = cleanBody.split(/\n\n+/).filter(s => s.trim().length > 50);
     if(paras.length >= 4) sections = paras;
   }
+  // Only show first section (1 suggestion/section) before paywall
+  const teaserSections = sections.slice(0,1);
   const hasMultipleSections = sections.length >= 2 && cleanBody.length > 400;
 
   const isUnlocked = _unlockedReports.has(rid);
@@ -1262,8 +1262,8 @@ function resultHtml(title, meta, body, actions){
   }
 
   if(hasMultipleSections){
-    // Show first 2 sections as teaser
-    const teaser = sections.slice(0,2).join('\n');
+    // Show first section only as teaser
+    const teaser = teaserSections.join('\n');
     return `<div class="rwrap" style="margin-top:1.25rem;">
       <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>
       ${likelihoodSection(body)}
@@ -1276,7 +1276,7 @@ function resultHtml(title, meta, body, actions){
           <div class="paywall-card">
             <div class="paywall-icon">🔓</div>
             <div class="paywall-title">Unlock Your Full Report</div>
-            <div class="paywall-sub">You're seeing 2 of ${sections.length} sections. Unlock the complete analysis for a one-time payment.</div>
+            <div class="paywall-sub">You're seeing a preview of your analysis. Unlock the complete analysis for a one-time payment.</div>
             <div class="paywall-features">
               <div class="paywall-feature"><span>✓</span> Full violation breakdown with exact code citations</div>
               <div class="paywall-feature"><span>✓</span> Complete ZBA action plan with deadlines & fees</div>
