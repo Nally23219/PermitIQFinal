@@ -1007,8 +1007,9 @@ function resultHtml(title, meta, body, actions){
   }
 
   // Teaser — show first 2 sections only, then paywall
-  const sections = cleanBody.split(/\n(?=##\s)/);
-  const teaser = sections.slice(0,2).join('\n');
+  const sections = cleanBody.split(/(?=^## )/m).filter(s => s.trim());
+  const teaserSections = sections.length > 1 ? sections.slice(0,2) : [cleanBody];
+  const teaser = teaserSections.join('\n');
 
   return `<div class="rwrap" style="margin-top:1.25rem;">
     <div class="rhd" style="justify-content:space-between;"><div><div class="rhd-title">${title}</div><div class="rhd-meta">${meta} · ${now}</div></div><span class="cbadge cb-green">Ready</span></div>
